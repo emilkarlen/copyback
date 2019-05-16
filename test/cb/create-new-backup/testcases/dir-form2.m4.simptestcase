@@ -1,0 +1,32 @@
+# Tests creating a new backup. The project is a directory project.
+#
+# Checks that
+#   * a directory is created,
+#   * the contents of the directory created is identical to the source directory,
+#   * the backup has got the right name.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:create-new-backup/dir
+home:..
+
+M4_CheckNewBackupName_env_set # m4
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . backup --project-name-head --directory -c a_name ${SIMPTEST_HOME}/data/dir
+
+check.prepare.replace-SIMPTEST-envvars/stdout,stderr
+
+check.exitcode:0
+
+# Check that exactly one file is created.
+check.run.cmdline:test $(ls -A a_name | wc -l) == '1'
+
+# Check that the directory created is identical to the source directory.
+check.compare.eq:data/dir:$(cat ${SIMPTEST_STDOUT})
+
+# Check that the backup name is correct (as described in the Test Plan).
+M4_CheckNewBackupName_check(`-r __SIMPTEST_TESTROOT__/a_name')  # m4

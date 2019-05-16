@@ -1,0 +1,28 @@
+# Tests syncing a directory to an existing backup.
+# The project is a directory project.
+# There is no existing backup, which results in an EXIT_ERROR
+#
+# Checks that
+#   * exactly one file (the backup) remains.
+#   * the contents of the directory created is identical to the source directory,
+#   * the backup has got the right name.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-update
+name:sync-dir-no-existing-bak
+home:..
+
+setup.install:data/orig-no-existing-bak/a_name
+
+# Code from m4 file: Set environment variables used later.
+M4_CheckNewBackupName_env_set
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --print-filename --directory --update --last -c a_name ${SIMPTEST_HOME}/data/to-sync
+
+check.exitcode:M4_EXIT_ERROR
+
+check.stdout.empty

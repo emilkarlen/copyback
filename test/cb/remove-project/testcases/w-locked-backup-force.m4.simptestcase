@@ -1,0 +1,22 @@
+# -*- m4 -*-
+# Tests trying to remove a project that is locked with a writable lock,
+# using the --force option.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/remove-project
+name:w-locked-backup-force
+home:..
+
+M4_SETUP_SRC_AND_BACKUP(`--lock')
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback M4_optsRoot M4_optsPrjName remove-project --force M4_PrjNameSrcDir
+
+check.exitcode:0
+
+# Check that the BRD exists and is empty.
+check.run.cmdline: test -d M4_BakRoot
+check.run.cmdline:test $(ls M4_BakRoot | wc -l) = 0

@@ -1,0 +1,11 @@
+# Test print-backup-file with the backup specified using --tag.
+
+m4_include(common.m4)
+
+application:copyback
+name:print-backup-file/tag
+home:..
+
+M4_SETUP_TESTDATA
+M4_TEST_RUN_PBF_WITH(`--tag "Version 2"')
+M4_CHECK_SUCCESS_AND_FILE(`output/tag.txt')

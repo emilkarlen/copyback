@@ -1,0 +1,25 @@
+# Tests to unlock an existing locked backup.
+#
+# Checks that
+#   * exactly one file - the backup - remains.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-locking
+name:unlock-2
+home:..
+
+setup.install:data/unlock-2/a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --prfn unlock --explicit a_name/copyback-20070614-162202.tar.gz
+
+check.exitcode:0
+
+# Check that exactly one file exists (only the backup, no lockfile).
+check.run.cmdline:test $(ls a_name | wc -l) == '1'
+
+# Check that the file is not locked.
+M4_CHECK_BACKUP_IS_LOCKED(`--not a_name/copyback-20070614-162202.tar.gz')

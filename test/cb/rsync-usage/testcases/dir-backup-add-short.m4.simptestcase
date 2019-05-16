@@ -1,0 +1,23 @@
+# Tests that the correct options are passed to `rsync'.
+#
+# `copyback' is invoked to add to an existing backup.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:rsync-usage/dir-backup-add/short
+home:..
+
+# Set SRC_BIN so the absolute path where to find `copyback'.
+env.set/mkabspath:SRC_BIN:M4_SRC_BIN
+
+# Create a directory to use as the source.
+setup.run.cmdline:mkdir source-dir
+
+test.run.cmdline/prepend-home:scripts/run-copyback-rsync-test ${SRC_BIN} ${PWD}/source-dir --directory -u -n --last
+
+# First some standard "general" checks.
+check.exitcode:0
+
+check.stdout.file.eq:output/dir-backup-add.txt

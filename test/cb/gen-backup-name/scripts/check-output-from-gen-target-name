@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# check-output-from-gen-target-name - Perform checks on the output to stdout from
+# the copyback test-command 'gen-target-name'.
+
+# The output from copyback/'gen-target-name' is expected to appear on stdin.
+# Checks that the second line names an existing writable lock-file.
+
+
+# A. Skip the first four lines : TRGNOEXT, BN_HEAD, BN_NOEXT and BN_LOCK.
+# B  Read the lock-file filename.
+#    Test if the lock-file exists and exit with this status.
+
+### A ###
+read; read; read; read
+### B ###
+read fileLockFile
+test -f ${fileLockFile} -a -w ${fileLockFile}

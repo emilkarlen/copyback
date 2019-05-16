@@ -1,0 +1,20 @@
+# -*- shell-script -*-
+# Tests cleaning a directory.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/clean
+name:dir-last-is-locked
+home:..
+
+setup.install:data/dir-last-is-locked/original/a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback clean --explicit a_name
+
+check.exitcode:0
+
+# Check that the contents is the final contents.
+check.compare.eq:data/dir-last-is-locked/final/a_name:a_name

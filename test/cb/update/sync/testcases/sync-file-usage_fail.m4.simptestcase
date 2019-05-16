@@ -1,0 +1,20 @@
+# Tests syncing a file to an existing backup
+# without specifying which backup to update.
+#
+
+m4_include(common.m4)
+
+application:copyback-update
+name:sync-file-usage_fail
+home:..
+
+setup.install:data/file/exist-plain/file.txt
+
+# Code from m4 file: Set environment variables used later.
+M4_CheckNewBackupName_env_set
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --print-filename --file --update --basename ${SIMPTEST_HOME}/data/file/final/file.txt
+
+check.exitcode:M4_EXIT_USAGE
+
+check.stdout.empty

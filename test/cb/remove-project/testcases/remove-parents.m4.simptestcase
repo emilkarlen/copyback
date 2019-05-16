@@ -1,0 +1,23 @@
+# -*- shell-script -*-
+# Tests removing a project that contains only one backup, and parent directories.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/remove-project
+name:remove-parents
+home:..
+
+M4_SETUP_SRC_AND_BACKUP
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback M4_optsRoot M4_optsPrjName remove-project --force M4_PrjNameSrcDir
+
+check.exitcode:0
+
+# Check that the backup root dir exists.
+check.run.cmdline: test -d M4_BakRoot
+
+# Check that the backup root dir is empty.
+check.run.cmdline:test $(ls M4_BakRoot | wc -l) = 0

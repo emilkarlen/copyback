@@ -1,0 +1,15 @@
+# Tests the setting of SRC, when the source is an existing file.
+
+m4_include(common.m4)
+
+application:copyback
+name:source-file-ok
+home:..
+
+setup.run.cmdline:mkdir bakroot
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bakroot --project-name-head --file -b --debug -- -c print-source ${SIMPTEST_HOME}/data/file-project
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+check.exitcode:0
+check.stdout.file.eq/replaced:output/source-file-ok.stdout.txt

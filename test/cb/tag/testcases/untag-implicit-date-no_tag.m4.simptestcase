@@ -1,0 +1,20 @@
+# Runs the untag command.
+#
+# Removing from a backup given implicitly using --date.
+# The given backup doesn't have a tag.
+
+m4_include(common.m4)
+
+application:copyback
+name:untag/implicit/date/no_tag
+home:..
+
+setup.install:M4_COMMON_DATA/bak-info:a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root=. --project-name-head --basename --print-filename untag --date=20070510-143099 a_name
+
+check.exitcode:0
+
+check.stdout.file.eq:output/20070510-143099.txt
+
+check.run.cmdline:test -f a_name/copyback-20070510-143099

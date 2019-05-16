@@ -1,0 +1,14 @@
+# Tests computing the backup destination.
+#
+# Fails because the argument is missing.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/abs-arg_bak-dir_existing_missing_arg
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -c test-dest-deriv abs-arg/bak-dir/existing 
+
+check.exitcode:M4_EXIT_USAGE

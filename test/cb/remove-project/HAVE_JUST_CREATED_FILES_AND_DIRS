@@ -1,0 +1,4 @@
+... using simptest --make ...
+No test exsts yet.
+
+One exception, have copied common.m4 to testcases/.

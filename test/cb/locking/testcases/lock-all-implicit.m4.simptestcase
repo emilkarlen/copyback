@@ -1,0 +1,21 @@
+# Tests lock --all for a project where the last backup is NOT locked.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-locking
+name:lock-all-implicit
+home:..
+
+setup.install:data/last-not-locked
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --directory -b --prfn lock --all last-not-locked
+
+check.exitcode:0
+
+check.stdout.file.eq:output/lock-all.txt
+
+# Check that correct files remains afterwards.
+check.compare.eq:data/final/lock-all:last-not-locked

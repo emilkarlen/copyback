@@ -1,0 +1,17 @@
+# Tests that the project name is set correctly: tests an "absolute" name.
+
+m4_include(common.m4)
+
+application:copyback
+name:prj-name/tail/absolute/short
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback -a --debug -- -c print-prjname-tail ${SIMPTEST_HOME}/data/prjname-test-file
+
+check.prepare.run.cmdline:ex -s -c "%s!${SIMPTEST_HOME\\:1}!__SIMPTEST_HOME__!" -c x ${SIMPTEST_STDOUT}
+
+# "Standard" general checks.
+check.exitcode:0
+check.stderr.empty
+
+check.stdout.file.eq:output/absolute.stdout.txt

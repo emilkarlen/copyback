@@ -1,0 +1,29 @@
+# -*- shell-script -*-
+# Tests removing a project that contains other files than backups.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+m4_define(`M4_nonBakFileInBakDir',`$(M4_printPrjDir)/non-backup-file.txt')
+
+application:copyback/remove-project
+name:remove-parents-nonempty
+home:..
+
+M4_SETUP_SRC_AND_BACKUP
+setup.run.cmdline:touch M4_nonBakFileInBakDir
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback M4_optsRoot M4_optsPrjName remove-project --force M4_PrjNameSrcDir
+
+#M4_checkSetPRJDIR
+
+check.exitcode:0
+
+# Check that the backup root dir exists.
+check.run.cmdline: test -d $(M4_printPrjDir)
+
+# Check that the backup root dir contains exactly the non-backup file.
+check.run.cmdline:stat M4_nonBakFileInBakDir
+check.run.cmdline:test $(ls $(M4_printPrjDir) | wc -l) = 1

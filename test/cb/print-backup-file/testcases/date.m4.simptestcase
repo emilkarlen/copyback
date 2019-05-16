@@ -1,0 +1,11 @@
+# Test print-backup-file with the backup specified using --date.
+
+m4_include(common.m4)
+
+application:copyback
+name:print-backup-file/date
+home:..
+
+M4_SETUP_TESTDATA
+M4_TEST_RUN_PBF_WITH(`--date 20070510-143502')
+M4_CHECK_SUCCESS_AND_FILE(`output/date.txt')

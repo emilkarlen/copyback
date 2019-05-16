@@ -1,0 +1,3715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<article>
+  <title><command>copyback</command> Users Guide</title>
+
+  <!--Usage of DocBook:
+
+  - "option" elements: set the "role" attribute to the name of the command the option belongs to.
+    This is not implemented for all "option"s for the moment.-->
+
+  <!--XXX COPYRIGHT NOTICE-->
+
+  <section>
+    <title>Introduction</title>
+
+    <section>
+      <title>What <command>copyback</command> is</title>
+
+      <!--copyback: backups files, directories and the output from programs
+copyback is simple: each backup is a plain file, no intelligent incremental updates
+* many backups, update existing - simple versioning.
+wrapper for rsync.-->
+
+      <para><command>copyback</command> is a simple program for backing up
+      files, directories or the output from programs. It is simple because the
+      backups are just copies of the files and directories it is told to
+      backup. If the output from a program is backup up, that is also stored
+      in a plain file. It is simple also because it does not apply any
+      advanced algorithms for incremental updates of existing backups.
+      Instead, backups are updated simply by replacing modified files and
+      adding new files.</para>
+
+      <para><command>copyback</command> copies and updates files and
+      directories using the program <command>rsync</command>. It can therefore
+      be seen as a wrapper for <command>rsync</command>.</para>
+
+      <!--copyback: good att organizing many backups, preserve existing directory hierarchies
+managing set of backups from different times.
+-->
+
+      <!--Goal in the design: flexibility (=> complexity) and smartness.-->
+
+      <para>What <command>copyback</command> tries to be good at is organizing
+      backups of different sources using a logical and useful directory
+      layout. For example, by default the directory layout of files in a
+      user's home directory is preserved: a backup of a file
+      <filename>~/a/b/file.txt</filename> is stored in the directory
+      <filename><replaceable>COPYBACK_ROOT</replaceable>/home/a/b/file.txt</filename>.
+      Here <filename><replaceable>COPYBACK_ROOT</replaceable></filename> is
+      the directory where <command>copyback</command> stores all backups.
+      <filename><replaceable>COPYBACK_ROOT</replaceable></filename> is set
+      either by the environment variable with the same name or using the
+      command line option
+      <option>--root</option>=<filename><replaceable>COPYBACK_ROOT</replaceable></filename>.</para>
+
+      <para>A goal in the design of <command>copyback</command> is that it
+      should be flexible in the way it chooses the directory layout for
+      storing backups. It tries to choose a good default, as well as letting
+      the user specify it if the default is not appropriate.</para>
+
+      <para><!--Manage many backups for a single source.--><command>copyback</command>
+      can manage a many backups made at different times for a single source (a
+      source is a file, directory or the output from a program).</para>
+
+      <!--Example of using copyback-->
+
+      <para><command>copyback</command> is quite easy and straight forward to
+      use.</para>
+
+      <example id="example.first-example-home"
+               xreflabel="Backing up a file using copyback">
+        <title>Backing up a file using <command>copyback</command></title>
+
+        <para>Suppose the environment variable <envar>COPYBACK_ROOT</envar> is
+        set to <filename>~/my-backups</filename> and that you have started a
+        shell with the current directory of <filename>~/my-dir</filename>. In
+        this directory there is a file <filename>my-file-txt</filename> that
+        you want to backup.</para>
+
+        <screen><prompt>~/my-dir$</prompt> <command>copyback</command> my-file.txt
+<computeroutput>~/my-backups/home/my-dir/my-file.txt/copyback-20070506-1430</computeroutput></screen>
+
+        <para>The second line is the filename of the backup. This file is a
+        copy of <filename>my-file.txt</filename>. It also has got the same
+        mode and modification time. The string
+        <literal>20070506-1430</literal> in the filename is the date and time
+        of when the backup was created.</para>
+      </example>
+
+      <!--Examples of when to use copyback.-->
+
+      <para>Some examples of when <command>copyback</command> may be
+      useful.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>As a backup solution for a small project that you don't want
+          to set up a Version Control System for.</para>
+        </listitem>
+
+        <listitem>
+          <para>For making backups in between commits of a project that you
+          use a Version Control System for.</para>
+        </listitem>
+
+        <listitem>
+          <para>While experimenting with files and directories you later want
+          to backup using a Version Control System.</para>
+        </listitem>
+
+        <listitem>
+          <para>As a <emphasis>simple</emphasis> backup solution for all files
+          you want to backup.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>What <command>copyback</command> is NOT</title>
+
+      <para><command>copyback</command> is not designed to replace existing
+      common backup tools and strategies. For example,
+      <command>copyback</command> is NOT ...</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>an advanced backup solution for systemwide incremental backups
+          (such as "dump" and "restore"),</para>
+        </listitem>
+
+        <listitem>
+          <para>a Version Control System (such as "cvs" and
+          "Subversion"),</para>
+        </listitem>
+
+        <listitem>
+          <para>a replacement for using a Version Control System.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section id="sect.synopsis">
+    <title>Invoking <command>copyback</command></title>
+
+    <section>
+      <title>General syntax</title>
+
+      <para>Each invocation of <command>copyback</command> executes one of
+      several <glossterm
+      linkend="glossentry.command">commands</glossterm>.</para>
+
+      <para>The general syntax is</para>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="plain"><replaceable>COMMAND</replaceable></arg>
+
+        <arg choice="opt">COMMAND-OPTIONS</arg>
+
+        <arg choice="opt">COMMAND-ARGUMENTS</arg>
+      </cmdsynopsis>
+
+      <para>See "<xref linkend="sect.cmd"/>" for a description of the syntax
+      and options accepted by each command.</para>
+
+      <para>Most commands has a (shorter) alias.</para>
+    </section>
+
+    <section>
+      <title>Commands that operate on a <glossterm
+      linkend="glossentry.project-directory">project
+      directory</glossterm></title>
+
+      <para>Many commands that operate on a <glossterm
+      linkend="glossentry.project-directory">project directory</glossterm>
+      (for example <literal>list</literal> and <literal>clean</literal>) has
+      two forms.</para>
+
+      <para>1. Give the project directory explicitly:</para>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="plain"><replaceable>COMMAND</replaceable></arg>
+
+        <arg choice="opt">COMMAND-OPTIONS</arg>
+
+        <group>
+          <arg choice="plain"><option
+          role="copyback">--explicit</option></arg>
+
+          <arg><option role="copyback">-e</option></arg>
+        </group>
+
+        <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>2. Give the project directory implicitly by supplying the same
+      <replaceable>SOURCE</replaceable> and backup options as was used when
+      creating the backup:</para>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="opt">BACKUP-OPTIONS</arg>
+
+        <arg choice="plain"><replaceable>COMMAND</replaceable></arg>
+
+        <arg choice="opt">COMMAND-OPTIONS</arg>
+
+        <arg choice="opt"><replaceable>SOURCE</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>(Not all of the backup options are relevant here, only the "<xref
+      linkend="sect.cmd.backup.options.naming-scheme"/>".)</para>
+
+      <para>Generally, <replaceable>SOURCE</replaceable> can be specified
+      either as an argument or using the option
+      <option>--source</option>=<replaceable>SOURCE</replaceable>.</para>
+    </section>
+
+    <section id="sect.synopsis.backup">
+      <title>Creating and updating backups</title>
+
+      <para>The backup command is the default command. It can be left out as
+      long as the other arguments don't clash with any of the other command
+      names.</para>
+
+      <para>The simplest syntax for creating and updating backups:</para>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="opt">BACKUP-OPTIONS</arg>
+
+        <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>The following syntaxes are all equivalent to the one above, and
+      may be useful in different circumstances:</para>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="plain">backup</arg>
+
+        <arg choice="opt">BACKUP-OPTIONS</arg>
+
+        <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+      </cmdsynopsis>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="opt">BACKUP-OPTIONS</arg>
+
+        <arg
+        choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+      </cmdsynopsis>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg
+        choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+        <arg choice="plain">backup</arg>
+
+        <arg choice="opt">BACKUP-OPTIONS</arg>
+      </cmdsynopsis>
+    </section>
+  </section>
+
+  <section id="sect.tutorial" xreflabel="Tutorial">
+    <title>Tutorial</title>
+
+    <!--Convention: "Do this using the copyback command COMMAND:"
+
+* The Calculator example
+* Work on a directory ~/programs/calculator
+* Set the backup root directory to ~/my-backups
+  copyback print-backup-root
+* Backup a directory (using defaul options).
+* Check backup contents using ls.
+* Confirm that copyback "knows" it has created the backup using 'list'.
+* More than one backup. Command aliases.  \-\-tar and \-\-gzip. Shorter aliases
+* Updating existing backups.
+* Removing old backups.
+* Preventing backups from getting updated or removed (locking).
+* Excluding selected files.
+* Organizing backups in directories.
+  backup root directory, project name, backup-name, datetime in backupnames.-->
+
+    <para>The following sections explains copyback using some sample sessions.
+    Hopefully even newbies can understand it. Experienced users might find the
+    the explications a bit too clear, though!</para>
+
+    <note>
+      <para>In the output from <command>copyback</command>, the character
+      <literal>~</literal> is used to denote the users home directory.</para>
+
+      <para>This is for making the output a bit clearer. In practice, the
+      actual directory name, such as <filename>/home/scott</filename>, will be
+      printed instead.</para>
+    </note>
+
+    <note>
+      <para>Some blank lines are inserted into the computer output.</para>
+
+      <para>This is also not (usually) true in practice, but it makes the
+      example sessions a bit clearer.</para>
+    </note>
+
+    <section>
+      <title>The Calculator example</title>
+
+      <!--The Calculator example. ~/programs/Calculator is PWD.-->
+
+      <para>Suppose we are working on a calculator program in the the
+      directory <filename>~/programs/Calculator</filename>. Suppose that this
+      is the current directory in our shell so that we can use the name
+      '<literal>.</literal>' (dot) to refer to it.</para>
+
+      <para>First of all, let us use list the files of the our Calculator
+      using <command>ls</command>.</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>ls</command>
+<computeroutput>calc.c
+Makefile
+report.tex</computeroutput></screen>
+    </section>
+
+    <section>
+      <title>Setting the <glossterm>backup root directory</glossterm></title>
+
+      <!--Set the backup root directory to ~/my-backups. 'backup-root-directory'-->
+
+      <para>Before we can create backups we must tell
+      <command>copyback</command> in which directory it should store the
+      backups. The easiest way to do this is to set the environment variable
+      <envar>COPYBACK_ROOT</envar>. Suppose we want to store our backups under
+      the directory <filename>~/my-backups</filename>.</para>
+
+      <para>If we are using the <command>bash</command> or
+      <command>sh</command> shell, we can set <envar>COPYBACK_ROOT</envar>
+      with the following shell command:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <emphasis role="bold">export</emphasis> COPYBACK_ROOT=~/my-backups</screen>
+
+      <para>If we are using the <command>tcsh</command> shell, we can set
+      <envar>COPYBACK_ROOT</envar> with the following shell command:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <emphasis role="bold">setenv</emphasis> COPYBACK_ROOT ~/my-backups</screen>
+
+      <para>To check that <command>copyback</command> really uses this
+      directory we can issue the <command>copyback</command> command
+      <literal>backup-root-directory</literal>:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> backup-root-directory
+<computeroutput>~/my-backups</computeroutput></screen>
+
+      <para>This directory is called the<glossterm
+      linkend="glossentry.backup-root-directory"> backup root
+      directory</glossterm>. See "<xref
+      linkend="sect.desc.storing-under-backup-root-directory"/>" for a
+      detailed description of how to set it.</para>
+    </section>
+
+    <section>
+      <title>Creating and listing a backup</title>
+
+      <!--* Backup a directory (using defaul options).-->
+
+      <para>Now we want to make a backup of the Calculator directory. Since it
+      is the current directory, we can use '<literal>.</literal>' (dot) to
+      refer to it. Create a backup using the the <command>copyback</command>
+      command <literal>backup</literal>:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> backup .
+<computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1030</computeroutput></screen>
+
+      <para>The line printed by <command>copyback</command> is the name of the
+      directory that is the backup. The string
+      <literal>20070205-1030</literal> is the current date and time. It will
+      of course be different if <command>copyback</command> is run at a
+      different time!</para>
+
+      <!--* Check backup contents using ls.-->
+
+      <para>We can use <command>ls</command> to check that it contains all our
+      files:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>ls</command> ~/my-backups/home/programs/Calculator/copyback-20070205-1030
+<computeroutput>calc.c
+Makefile
+report.tex</computeroutput></screen>
+
+      <!--* Confirm that copyback "knows" it has created the backup using 'list'.-->
+
+      <para>We can also let <command>copyback</command> confirm that we have
+      created a backup. Do this by listing existing backups using the
+      <command>copyback</command> command <literal>list</literal>:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> list .
+<computeroutput>copyback-20070205-1030</computeroutput></screen>
+
+      <para><command>copyback</command> responds by listing all existing
+      backups of the directory <filename>.</filename> (dot), which in our
+      example is <filename>~/programs/Calculator</filename>. As expected, only
+      one date is printed, since we have only made one backup yet.</para>
+
+      <para><command>copyback</command> can also present the backup in a more
+      formatted way:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> --print-formatted list .
+<computeroutput>2007-02-05 10:30</computeroutput></screen>
+    </section>
+
+    <section>
+      <title>Creating more backups</title>
+
+      <!--More than one backup. Command aliases.  \-\-tar and \-\-gzip. Shorter aliases-->
+
+      <para>Suppose we work on the Calculator for a couple of hours until we
+      reach a version we want to be sure not to loose. At 11:15, we create one
+      more backup:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> b --tar --gzip .
+<computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1115.tar.gz</computeroutput></screen>
+
+      <para>The <command>copyback</command> command used is still
+      <literal>backup</literal>, but we use its shorter alias
+      '<literal>b</literal>'. Most commands and options have a shorter
+      alias.</para>
+
+      <para>The options <option>--tar</option> and <option>--gzip</option>
+      tells <command>copyback</command> to put all files in a
+      <command>tar</command> archive, and then to compress this archive using
+      <command>gzip</command>. The extension <literal>.tar.gz</literal> of the
+      backup reflects this.</para>
+
+      <para>The options <option>--tar</option> and <option>--gzip</option> has
+      the shorter aliases <option>-T</option> and <option>-z</option>,
+      respectively</para>
+
+      <para>Again, we want to check the contents of our backup. This time we
+      must use the program <command>tar</command> to view it since it is a
+      <command>tar</command> archive:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>tar</command> tzf ~/my-backups/home/programs/Calculator/copyback-20070205-1115.tar.gz
+<computeroutput>calc.c
+Makefile
+report.tex</computeroutput></screen>
+    </section>
+
+    <section>
+      <title>Listing backups, again</title>
+
+      <!--* Confirm that copyback "knows" it has created the backup using 'list'.-->
+
+      <para>We let <command>copyback</command> confirm that we created a new
+      backup in the last section. Now we use the short alias
+      '<literal>l</literal>' for <literal>list</literal>:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> l .
+<computeroutput>copyback-20070205-1030
+copyback-20070205-1115.tar.gz</computeroutput></screen>
+
+      <para>We see that both our backups are present. They are listed one per
+      line and in creation time order. <command>copyback</command>
+      <literal>list</literal> always lists backups this way.</para>
+
+      <para>But each backup can be presented in some different manners. Use
+      one of the following options to decide the format: <option
+      role="copyback">--print-filename</option>, <option
+      role="copyback">--print-filename-extra</option>, <option
+      role="copyback">--print-formatted</option>. These are general options
+      that apply to many commands, not only <literal>list</literal>.</para>
+
+      <para><option role="copyback">--print-formatted</option> presents each
+      backup in a clearer format:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> --print-formatted l .
+<computeroutput>2007-02-05 10:30
+2007-02-05 11:15</computeroutput></screen>
+    </section>
+
+    <section>
+      <title>Updating backups</title>
+
+      <para>Suppose we are satisfied with our current version of the
+      calculator, except that we remember that it is good practice to have a
+      <filename>README</filename> file. We wish we had written the
+      <filename>README</filename> file <emphasis>before</emphasis> we made the
+      last backup, so it had been included in it.</para>
+
+      <para>We could achieve this by creating a new backup and then deleting
+      the backup file <filename>copyback-20070205-1115.tar.gz</filename>
+      manually. But an easier ways is to let <command>copyback</command>
+      update the last backup.</para>
+
+      <para>Updating a backup modifies it to be an exact copy of the source.
+      This includes adding, modifying and removing files in the backup. The
+      date and time of the updated backup is set to the current date and
+      time.</para>
+
+      <para>Updating is done by adding the <option
+      role="copyback">--update</option> option to the command
+      <literal>backup</literal>, together with specifying which backup to
+      update:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> backup --update --last .
+<computeroutput>copyback: Updating backup: copyback-20070205-1115.tar.gz
+~/my-backups/home/programs/Calculator/copyback-20070205-1135</computeroutput></screen>
+
+      <para><command>copyback</command> prints a message informing us that it
+      updating an existing backup.</para>
+
+      <para>The updated backup is <filename>copyback-20070205-1135</filename>.
+      Note that this is not a <command>gzip</command>'ed
+      <command>tar</command> archive as the original backup was.
+      <command>copyback</command> only looks at the command line options to
+      decide how it create backups, never at old backups. You would have to
+      supply <option>--tar</option> and <option>--gzip</option> (or
+      <option>-Tz</option>) to make the updated backup a
+      <command>gzip</command>'ed <command>tar</command> archive, too.</para>
+
+      <para>Use <command>ls</command> to check that the
+      <filename>README</filename> file is in the backup:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>ls</command> ~/my-backups/home/programs/Calculator/copyback-20070205-1135
+<computeroutput>calc.c
+Makefile
+README
+report.tex</computeroutput></screen>
+    </section>
+
+    <section>
+      <title>Removing old backups</title>
+
+      <!--Removing old backups-->
+
+      <para>There is one <command>copyback</command> command to remove
+      existing backups. It is the command <literal>clean</literal>, which
+      removes all but the latest existing backups. If there is only one
+      backup, no backup is removed.</para>
+
+      <para>The following session first uses the command list to
+      <literal>list</literal> the existing backups, then
+      <command>copyback</command> <literal>clean</literal> is run, and then
+      the remaining backups are listed.</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> list .
+<computeroutput>copyback-20070205-1030
+copyback-20070205-1135
+</computeroutput>
+<prompt>~/programs/Calculator$</prompt> <command>copyback</command> clean .
+<computeroutput>copyback-20070205-1030</computeroutput>
+<prompt>
+~/programs/Calculator$</prompt> <command>copyback</command> list .
+<computeroutput>copyback-20070205-1135</computeroutput></screen>
+    </section>
+
+    <section>
+      <title>Preventing backups from getting updated or removed</title>
+
+      <!--Preventing backups from getting updated or removed-->
+
+      <para>A backup can be "locked" to prevent it from getting updated or
+      removed.</para>
+
+      <para>Suppose we still have the two backups we had before we
+      <literal>clean</literal>'ed our Calculator directory:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> list .
+<computeroutput>copyback-20070205-1030
+copyback-20070205-1135</computeroutput></screen>
+
+      <para>We lock the backup <filename>copyback-20070205-1030</filename>
+      using the <command>copyback</command> command <literal>lock</literal>.
+      We use the <option role="copyback">--date</option> option to tell which
+      backup to lock:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> lock --date 20070205-1030 .</screen>
+
+      <para>Now we run the command <literal>clean</literal> again, and then
+      list the existing backups:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> clean .
+<computeroutput>copyback: Skipping locked backup: copyback-20070205-1030
+</computeroutput>
+<prompt>~/programs/Calculator$</prompt> <command>copyback</command> list .
+<computeroutput>copyback-20070205-1030*
+copyback-20070205-1135</computeroutput></screen>
+
+      <para>No backup has been removed since the command
+      <literal>clean</literal> only removes non-locked backups and never
+      removes the last backup.</para>
+
+      <para>An asterisk - '*' - is printed after the backup
+      <filename>copyback-20070205-1030</filename> to inform us that it is
+      locked.</para>
+
+      <para>Locked backups are unlocked by the command
+      <literal>unlock</literal>:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> unlock --date 20070205-1030 .
+
+<prompt>~/programs/Calculator$</prompt> <command>copyback</command> list .
+<computeroutput>copyback-20070205-1030
+copyback-20070205-1135</computeroutput></screen>
+
+      <para>The last existing backup can be locked/unlocked using the option
+      <option>--last</option> (or <option>-l</option>):</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> lock --last .
+<computeroutput>copyback-20070205-1135
+
+</computeroutput><prompt>~/programs/Calculator$</prompt> <command>copyback</command> list .
+<computeroutput>copyback-20070205-1030
+copyback-20070205-1135*</computeroutput></screen>
+
+      <para>Locking affects updating using `<code><command>copyback</command>
+      backup <option role="copyback">--update</option></code>', and cleaning
+      using `<code><command>copyback</command> clean</code>'. Both of these
+      commands can be forced to operate even on locked backups using the
+      <option>--force</option> (or <option>-f</option>) option.</para>
+    </section>
+
+    <section>
+      <title>Excluding selected files</title>
+
+      <para>If there are selected files in the directory that you don't want
+      to have backups of, you can "exclude" these.</para>
+
+      <!--Excluding selected files-->
+
+      <para>While working on our Calculator project, the files
+      `<filename>calc</filename>' and `<filename>calc.o</filename>' are
+      generated from `<filename>calc.c</filename>':</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>ls</command>
+<computeroutput>calc      calc.c  calc.o
+Makefile  README  report.tex</computeroutput></screen>
+
+      <para>We don't want these in our backups. We exclude them using the
+      option <option>--exclude</option> (or <option>-e</option>):</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> backup <option>--exclude</option>=calc <option>--exclude</option>=*.o .
+<computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1210</computeroutput>
+
+<prompt>~/programs/Calculator$</prompt> <command>ls</command> ~/my-backups/home/programs/Calculator/copyback-20070205-1210
+<computeroutput>calc.c
+Makefile
+README
+report.tex</computeroutput></screen>
+
+      <para><code><option>--exclude</option>=calc</code> causes the file
+      `<filename arch="">calc</filename>' to be excluded.
+      <code><option>--exclude</option>=calc</code> causes all files ending
+      with `<literal>.o</literal>' to be excluded.</para>
+
+      <para>Since it is so common to exclude selected files
+      <command>copyback</command> will by default look for a hidden file
+      called `<filename>.copyback-exclude</filename>' and read exclude
+      "patterns" from it. A `<filename>.copyback-exclude</filename>' file for
+      excluding the files above looks like this:</para>
+
+      <programlisting>calc
+*.o</programlisting>
+
+      <para>If we create this file we can use
+      `<code><command>copyback</command> backup</code>' without the
+      <option>--exclude</option> options. But since
+      <filename>.copyback-exclude</filename> is a hidden file, we need to use
+      the <command>ls</command> option <option>-A</option> to see all files in
+      the backup:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> backup .
+<computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1215</computeroutput>
+
+<prompt>~/programs/Calculator$</prompt> <command>ls</command> <option>-A</option> ~/my-backups/home/programs/Calculator/copyback-20070205-1215
+<computeroutput>calc.c
+Makefile
+README
+report.tex
+.copyback-exclude</computeroutput></screen>
+
+      <para><command>copyback</command> uses the <command>rsync</command>
+      program for creating backups, and these "patterns" are
+      <command>rsync</command> "exclude patterns". See "<xref
+      linkend="sect.cmd.backup.options.rsync-forward"/>" or the
+      <command>rsync</command> manual for details.</para>
+    </section>
+
+    <section>
+      <title>Using <command>copyback</command> conveniently</title>
+
+      <!--frequent SOURCE -> use a shell alias
+in aliases, use the form \-\-source=SOURCE
+examples - backup is the default command sot it need not be given-->
+
+      <para>If a <replaceable>SOURCE</replaceable> is backued up frequently it
+      is recommended to make a shell alias that does the job.</para>
+
+      <para>Lets say we want an alias `<literal>cbc</literal>' for backing up
+      the Calculator directory, and that we want each backup to be a
+      <command>gzip</command>'ed <command>tar</command> archive.</para>
+
+      <para>Using the bash or sh shell, you achieve this as follows:</para>
+
+      <screen><prompt>$ </prompt><emphasis role="bold">alias</emphasis> cbc='copyback --tar --gzip --source ~/programs/Calculator'</screen>
+
+      <para>Using the tcsh shell use the following:</para>
+
+      <screen><prompt>$ </prompt><emphasis role="bold">alias</emphasis> cbc 'copyback --tar --gzip --source ~/programs/Calculator'</screen>
+
+      <para>Now we can create backups like this:</para>
+
+      <screen><prompt>~$</prompt> <command>cbc</command> b
+<computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1500.tar.gz</computeroutput></screen>
+
+      <para>Or even like this (because <literal>backup</literal> is the
+      default command):</para>
+
+      <screen><prompt>~$</prompt> <command>cbc</command>
+<computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1500.tar.gz</computeroutput></screen>
+
+      <para>List the existing backups like this (using the sort alias
+      '<literal>l</literal>' for <literal>list</literal>):</para>
+
+      <screen><prompt>~$</prompt> <command>cbc</command> l
+<computeroutput>copyback-20070205-1135
+copyback-20070205-1500.tar.gz</computeroutput></screen>
+
+      <para>Update the last backup (using the short alias <option
+      role="copyback">-u</option> for <option
+      role="copyback">--update</option>, and <option
+      role="copyback">-l</option> for <option
+      role="copyback">--last</option>):</para>
+
+      <screen><prompt>~$</prompt> <command>cbc</command> -ul
+<computeroutput>copyback: Updating backup: copyback-20070205-1500.tar.gz
+~/my-backups/home/programs/Calculator/copyback-20070205-1505.tar.gz</computeroutput></screen>
+
+      <para>Lock all backups <option role="copyback">--all</option>, and list
+      them:</para>
+
+      <screen><prompt>~$</prompt> <command>cbc</command> lock --all
+<computeroutput>copyback-20070205-1135
+copyback-20070205-1505.tar.gz</computeroutput><prompt>
+
+~$ </prompt><command>cbc</command> l
+<computeroutput>copyback-20070205-1135*
+copyback-20070205-1505.tar.gz*
+</computeroutput></screen>
+
+      <para>Do a <literal>clean</literal> and list the backups. An "ordinary"
+      <literal>clean</literal> will not remove any backups since they are all
+      locked. But adding the option <option>--force</option> (or the short
+      alias <option>-f</option>) will do:</para>
+
+      <screen><prompt>~$ </prompt><command>cbc</command> clean
+<computeroutput>copyback: Skipping locked backup: copyback-20070205-1135</computeroutput><prompt>
+
+~$ </prompt><command>cbc</command> l
+<computeroutput>copyback-20070205-1135*
+copyback-20070205-1505.tar.gz*
+</computeroutput><prompt>
+~$ </prompt><command>cbc</command> clean --force
+<computeroutput>copyback-20070205-1135</computeroutput></screen>
+    </section>
+
+    <section>
+      <title>Organizing backups in directories</title>
+
+      <para><command>copyback</command> has put all the backups of the
+      previous sections in the directory
+      <filename>~/my-backups/home/programs/Calculator</filename>.</para>
+
+      <para>You may now wonder how this directory was chosen.</para>
+
+      <para>The name consists of two parts: the <glossterm
+      linkend="glossentry.backup-root-directory">backup root
+      directory</glossterm> and the <glossterm lang=""
+      linkend="glossentry.project-name">project name</glossterm>:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term><literal>~/my-backups</literal></term>
+
+          <listitem>
+            <para>This is the <glossterm
+            linkend="glossentry.backup-root-directory">backup root
+            directory</glossterm> we set earlier using the environment
+            variable <envar>COPYBACK_ROOT</envar>.</para>
+
+            <para>See "<xref
+            linkend="sect.desc.storing-under-backup-root-directory"/>" for a
+            detailed description of how to set it.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><literal>home/programs/Calculator</literal></term>
+
+          <listitem>
+            <para>This is the <glossterm lang=""
+            linkend="glossentry.project-name">project name</glossterm>.
+            <command>copyback</command> calls each item it creates backups of
+            for a <glossterm linkend="glossentry.project">project</glossterm>,
+            and each <glossterm
+            linkend="glossentry.project">project</glossterm> has a <glossterm
+            lang="" linkend="glossentry.project-name">project
+            name</glossterm>. In this case the <glossterm
+            linkend="glossentry.project">project</glossterm> is the directory
+            <filename>~/programs/Calculator</filename>.</para>
+
+            <para>In our example, <command>copyback</command> has chosen the
+            default project name since we have not specified one
+            ourselves.</para>
+
+            <para>The part <literal>home</literal> is chosen since the project
+            is a directory within the home directory ~. The part
+            <literal>programs/Calculator</literal> is of course chosen since
+            this is the name of the directory following the name of the home
+            directory.</para>
+
+            <para>See "<xref linkend="sect.descr.naming-schemes"/>" for a
+            detailed description of how to set the <glossterm lang=""
+            linkend="glossentry.project-name">project name</glossterm>.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>You can ask <command>copyback</command> to print these parts for
+      you:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> backup-root-directory
+<computeroutput>~/my-backups</computeroutput>
+
+<prompt>~/programs/Calculator$</prompt> <command>copyback</command> project-name .
+<computeroutput>home/programs/Calculator</computeroutput></screen>
+
+      <para>The <glossterm linkend="glossentry.backup-root-directory">backup
+      root directory</glossterm> followed by the <glossterm lang=""
+      linkend="glossentry.project-name">project name</glossterm> is the
+      <glossterm lang="" linkend="glossentry.project-directory">project
+      directory</glossterm>. This is where all backups for your project are
+      stored. You can ask <command>copyback</command> to print this for you
+      too:</para>
+
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> project-directory .
+<computeroutput><computeroutput>~/my-backups</computeroutput>/home/programs/Calculator</computeroutput></screen>
+    </section>
+  </section>
+
+  <section id="sect.descr">
+    <title>Description</title>
+
+    <!--disposition:
+* what copyback backups - sources (files, directories, program output)
+* representation of backups
+* storing of backups as files under a personal Backup root directory
+   - personal "backup root directory"
+   - each item is stored in a seprate directory.
+* projects: source, directory, name, backup root directory.
+   - three items
+   - preserve dir layout (using prj names)
+* project naming schemes
+* working with backups
+ - commands, invokation syntax-->
+
+    <section>
+      <title>The items <command>copyback</command> can backup</title>
+
+      <!--"sources" (files,dirs,pgm-output,-)-->
+
+      <para><command>copyback</command> can backups three kinds of
+      items:<itemizedlist>
+          <listitem>
+            <para>a file</para>
+          </listitem>
+
+          <listitem>
+            <para>a directory</para>
+          </listitem>
+
+          <listitem>
+            <para>program output</para>
+          </listitem>
+        </itemizedlist></para>
+
+      <para>These items are the <replaceable>SOURCE</replaceable> argument to
+      <command>copyback</command>.</para>
+
+      <para>The "output" from a program means the output to the standard
+      output channel (stdout). In this case, <replaceable>SOURCE</replaceable>
+      is the command line for running the program. A special case of program
+      output is '-' (dash). When <replaceable>SOURCE</replaceable> is this
+      string, the contents of the standard input channel (stdin) is backed
+      up.</para>
+    </section>
+
+    <section>
+      <title>Representation of backups - backup files</title>
+
+      <!--each backup is a file/directory
+rsync
+compression and other formats
+each backup filename matches a e-reg-exp
+each backup filename encodes the datetime of the backup
+backup names are special - cannot create backups of these-->
+
+      <para>A backup of a file/directory is a copy of that file/directory. A
+      backup of program output is a file storing the output.</para>
+
+      <para>Files and directories are copied using <command>rsync</command>.
+      See "<xref linkend="sect.description.rsync-usage"/>" for details.</para>
+
+      <para>Directories can be archived in a single <command>tar</command>
+      archive (using <option>--tar</option>).</para>
+
+      <para>Backup files and directories can be compressed using gzip (using
+      <option>--gzip</option>). Compressing a directory means compressing all
+      files in it.</para>
+
+      <para>If a directory is both <command>tar</command>'ed and
+      <command>gzip</command>'ed, the result is of course a
+      <command>gzip</command>'ed <command>tar</command> archive.</para>
+
+      <section>
+        <title>Backup filenames</title>
+
+        <para>Each backup is stored in a file with a standard name, each
+        matching this extended regular expression:</para>
+
+        <para><code>copyback-[[:digit:]]{8}-[[:digit:]]{4,6}(-[^/.*"]+)?($|\..+)</code></para>
+
+        <warning>
+          <para>Source files matching this expression are not guarrantied to
+          be backed up correctly. The behaviour of trying to backup such files
+          is undefined.</para>
+        </warning>
+
+        <example>
+          <title>Example of backup filenames</title>
+
+          <itemizedlist>
+            <listitem>
+              <para><filename>copyback-20010203-1020</filename></para>
+            </listitem>
+
+            <listitem>
+              <para><filename>copyback-20010203-1130.tar</filename></para>
+            </listitem>
+
+            <listitem>
+              <para><filename>copyback-20010203-1230-version
+              1</filename></para>
+            </listitem>
+
+            <listitem>
+              <para><filename>copyback-20010203-123012-version
+              2.tar</filename></para>
+            </listitem>
+
+            <listitem>
+              <para><filename>copyback-20010203-123013.tar.gz</filename></para>
+            </listitem>
+
+            <listitem>
+              <para><filename>copyback-20010203-123012.gzs</filename></para>
+            </listitem>
+          </itemizedlist>
+        </example>
+
+        <para>This name encodes the following information:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>datetime of the creation of the backup</para>
+          </listitem>
+
+          <listitem>
+            <para>a "tag" string</para>
+          </listitem>
+
+          <listitem>
+            <para>type of backup file</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>The format of the creation datetime is
+        <replaceable>YYYY</replaceable><replaceable>MM</replaceable><replaceable>DD</replaceable>-<replaceable>hh</replaceable><replaceable>mm</replaceable>
+        or
+        <replaceable>YYYY</replaceable><replaceable>MM</replaceable><replaceable>DD</replaceable>-<replaceable>hh</replaceable><replaceable>mm</replaceable><replaceable>ss</replaceable>.
+        The second format is used if there already is a backup for the same
+        minute.</para>
+
+        <para><replaceable>YYYY</replaceable>, <replaceable>MM</replaceable>,
+        <replaceable>DD</replaceable>, <replaceable>hh</replaceable> and
+        <replaceable>mm</replaceable> and <replaceable>ss</replaceable> are
+        the current year, month, day-of-month, hour, minute and seconds,
+        respectively.</para>
+
+        <para>This encoded creation time is used for sorting the backups in
+        creation time order. This is used by some of the commands for locating
+        backups, so it is important.</para>
+
+        <warning>
+          <para>Time-zones are ignored. These are not encoded in the
+          filename.</para>
+        </warning>
+
+        <warning>
+          <para><command>copyback</command> can only create one backup of a
+          source for each single second.</para>
+        </warning>
+
+        <note>
+          <para>The modification time is not used to store the creation time
+          since the modification time is an attribute that should be backed
+          up.</para>
+        </note>
+
+        <para>The "tag" string is a an optional string used for referring to
+        backups using <option role="copyback">--tag</option>. Each tag must be
+        unique among the backups for a single source.</para>
+
+        <para>The type of backup file is encoded in the filename
+        extension.</para>
+
+        <section>
+          <title>Backup filename extensions</title>
+
+          <para>The type of backup file is as usual encoded in the extension -
+          the part following the first dot.</para>
+
+          <para>By default, backup names have no extension.This indicates that
+          the backup is a plain copy of <replaceable>SOURCE</replaceable> (if
+          it is a file or directory).</para>
+
+          <para>The following extensions are used by
+          <command>copyback</command> to identify different types of
+          "postprocessed" backups:</para>
+
+          <variablelist>
+            <varlistentry>
+              <term><literal>gz</literal></term>
+
+              <listitem>
+                <para>A backup of a file or the output from a program. The
+                contents has been compressed using
+                <command>gzip</command>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><literal>gzs</literal></term>
+
+              <listitem>
+                <para>A backup of a directory. All files in it has been
+                compressed using <command>gzip</command>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><literal>tar</literal></term>
+
+              <listitem>
+                <para>A backup of a directory. All files in the directory has
+                been archived in a single <command>tar</command>
+                archive.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><literal>tar.gz</literal></term>
+
+              <listitem>
+                <para>A backup of a directory. All files in the directory has
+                been archived in a single <command>tar</command> archive,
+                which has in turn been compressed using
+                <command>gzip</command>.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+
+          <warning>
+            <para>These extensions tell <command>copyback</command> how to
+            update a backup. Don't change them!</para>
+          </warning>
+        </section>
+      </section>
+    </section>
+
+    <section id="sect.desc.storing-under-backup-root-directory"
+             xreflabel="Storing all backups under a personal backup root directory">
+      <title>Storing all backups under a personal <glossterm>backup root
+      directory</glossterm></title>
+
+      <para>The backup of each item is stored as a file or directory under a
+      personal <glossterm linkend="glossentry.backup-root-directory">backup
+      root directory</glossterm>. This directory should
+      <emphasis>only</emphasis> be used for storing
+      <command>copyback</command> backups.</para>
+
+      <para>The backups for each item are stored in a separate subdirectory of
+      the <glossterm linkend="glossentry.backup-root-directory">backup root
+      directory</glossterm>.</para>
+
+      <para>The <glossterm linkend="glossentry.backup-root-directory">backup
+      root directory</glossterm> is supposed to be personal. Each user should
+      have its own directory. (It is not impossible for several users to share
+      it, but then special care must be taken so that the different sources
+      are not stored in the same directory. This can lead to lost
+      information.)</para>
+
+      <para>The <glossterm linkend="glossentry.backup-root-directory">backup
+      root directory</glossterm> is most commonly set using the environment
+      variable <envar>COPYBACK_ROOT</envar>. It can also be specified on the
+      command line using the option
+      <option>--root</option>=<replaceable>DIRECTORY</replaceable>. The
+      <option>--root</option> option overrides
+      <envar>COPYBACK_ROOT</envar>.</para>
+
+      <para>See <xref linkend="sect.cmd.general-options.bak-root"/> and <xref
+      linkend="sect.environment"/> for details.</para>
+
+      <section>
+        <title>A system-<glossterm>global backup root
+        directory</glossterm></title>
+
+        <para>A <glossterm
+        linkend="glossentry.global-backup-root-directory">global backup root
+        directory</glossterm> can be used if <command>copyback</command> is
+        used by many users on the system, and the backups for all these users
+        should be stored under a common directory. The <glossterm
+        linkend="glossentry.global-backup-root-directory">global backup root
+        directory</glossterm> is set using the environment variable
+        <envar>COPYBACK_ROOT_GLOBAL</envar> or the
+        <option>--root-global</option>=<replaceable>DIRECTORY</replaceable>
+        option.</para>
+
+        <para>The <glossterm linkend="glossentry.backup-root-directory">backup
+        root directory</glossterm> for each user will by default be set to
+        <filename><replaceable>DIRECTORY</replaceable>/users/<replaceable>USER</replaceable></filename>.
+        <replaceable>USER</replaceable> is the name of the (effective)
+        operating system user.</para>
+
+        <para>If
+        <option>--root-global-suffix</option>=<replaceable>STRING</replaceable>
+        is used, the <glossterm
+        linkend="glossentry.backup-root-directory">backup root
+        directory</glossterm> for each user will be set to
+        <filename><replaceable>DIRECTORY</replaceable>/<replaceable>STRING</replaceable></filename>.</para>
+
+        <note>
+          <para>Each user can override this using <envar>COPYBACK_ROOT</envar>
+          or <option>--root</option>.</para>
+        </note>
+      </section>
+    </section>
+
+    <section id="sect.description.organization-projects"
+             xreflabel="Organization of backups using projects">
+      <title>Organization of backups using <glossterm
+      linkend="glossentry.project">projects</glossterm></title>
+
+      <!--projects-->
+
+      <para><command>copyback</command> can keep many backups from different
+      times of each <replaceable>SOURCE</replaceable>. And of course, it can
+      keep backups of many different <replaceable>SOURCE</replaceable>'s. To
+      do this it, organizes them into <glossterm
+      linkend="glossentry.project">projects</glossterm>. Basically, each
+      <replaceable>SOURCE</replaceable> is a <glossterm
+      linkend="glossentry.project">project</glossterm>.</para>
+
+      <para>A <glossterm linkend="glossentry.project">project</glossterm>
+      consists of three things:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>a <glossterm linkend="glossentry.project-source">project
+          source</glossterm></para>
+        </listitem>
+
+        <listitem>
+          <para>a <glossterm linkend="glossentry.project-directory">project
+          directory</glossterm></para>
+        </listitem>
+
+        <listitem>
+          <para>a <glossterm linkend="glossentry.project-name">project
+          name</glossterm></para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The <glossterm linkend="glossentry.project-source">project
+      source</glossterm> is the same as <replaceable>SOURCE</replaceable> -
+      the item to backup.</para>
+
+      <para>The <glossterm linkend="glossentry.project-name">project
+      name</glossterm> is a unique name. The name is used for deriving the
+      <glossterm linkend="glossentry.project-directory">project
+      directory</glossterm>.</para>
+
+      <para>The <glossterm linkend="glossentry.project-directory">project
+      directory</glossterm> is a unique directory where all backups for the
+      <glossterm linkend="glossentry.project">project</glossterm> are stored.
+      The name of this directory is the <glossterm
+      linkend="glossentry.backup-root-directory">backup root
+      directory</glossterm> appended by the <glossterm
+      linkend="glossentry.project-name">project name</glossterm>. The project
+      name can include slashes ('/') to specify subdirectories.</para>
+
+      <para>Usually you just have to supply the
+      <replaceable>SOURCE</replaceable>. <command>copyback</command> will, by
+      default, derive the <glossterm linkend="glossentry.project-name">project
+      name</glossterm> from the (absolute) filename of
+      <replaceable>SOURCE</replaceable>. This name is then used to derive the
+      <glossterm linkend="glossentry.project-directory">project
+      directory</glossterm>. This default behaviour will organize the backups
+      into a directory tree layout that resembles the directory tree storing
+      the <replaceable>SOURCE</replaceable>s.</para>
+
+      <warning>
+        <para>Each item must have a unique name.</para>
+
+        <para>Otherwise backups of different items will be stored in the same
+        directory, and <command>copyback</command> will not be able to
+        separate between them.</para>
+      </warning>
+
+      <warning>
+        <para>It is possible to backup a single item using different project
+        names.</para>
+
+        <para>This will cause the backups to be stored in different
+        directories. <command>copyback</command> is not able to tell if
+        backups in different directories originate from the same
+        source.</para>
+      </warning>
+
+      <para>The <glossterm linkend="glossentry.project-name">project
+      name</glossterm> needs only be unique among all the projects who's
+      backups are stored under the current <glossterm
+      linkend="glossentry.backup-root-directory">backup root
+      directory</glossterm>. Since this directory is usually personal, you
+      don't have to care about other people's backups.</para>
+
+      <para><command>copyback</command> uses <glossterm
+      linkend="glossentry.project-naming-scheme">project naming
+      schemes</glossterm> for determining <glossterm
+      linkend="glossentry.project-name">project names</glossterm>. It has a
+      default naming scheme, which uses part of the absolute filename of files
+      and directories. This naming scheme is sufficient most of the
+      time.</para>
+
+      <para>If the source is program output, a name has to be supplied
+      explicitly using
+      <option>--constant</option>=<replaceable>NAME</replaceable>.</para>
+
+      <para>See "<xref linkend="sect.descr.naming-schemes"/>" for more
+      information on naming projects.</para>
+    </section>
+
+    <section>
+      <title>Overview of the parts making the <glossterm
+      linkend="glossentry.project-directory">project
+      directory</glossterm></title>
+
+      <para>The construction of the <glossterm
+      linkend="glossentry.project-directory">project directory</glossterm> can
+      seem a bit complicated. The purpose is of course flexibility.</para>
+
+      <para>For normal use of copyback, the <glossterm
+      linkend="glossentry.project-directory">project directory</glossterm> is
+      derived automatically - you don't have to care about it at all.</para>
+
+      <para>Anyway, the following picture tries to give an overview:</para>
+
+      <programlisting>|-----------------------------project-directory---------------------------|
+|--------------bak-root-----------------||----------prj-name--------------|
+                                         |-prj-name-head-||-prj-name-tail-|
+|-bak-root-global-||-users/USER---------||----------prj-name--------------|
+|-bak-root-global-||-global-root-suffix-||----------prj-name--------------|</programlisting>
+
+      <para>Each of these parts can be set by the user.</para>
+
+      <orderedlist>
+        <listitem>
+          <para>The backups of a project are stored in a <glossterm
+          linkend="glossentry.project-directory">project
+          directory</glossterm>.</para>
+        </listitem>
+
+        <listitem>
+          <para>The <glossterm linkend="glossentry.project-directory">project
+          directory</glossterm> is constructed by adding the <glossterm>backup
+          root directory</glossterm> and the <glossterm
+          linkend="glossentry.project-name">project name</glossterm>,
+          separated by a slash.</para>
+        </listitem>
+
+        <listitem>
+          <para>The <glossterm linkend="glossentry.project-name">project
+          name</glossterm> is constructed by adding the<glossterm
+          linkend="glossentry.project-name-head">project name head</glossterm>
+          and the <glossterm linkend="glossentry.project-name-tail">project
+          name tail</glossterm> to the , separated by a slash.</para>
+        </listitem>
+
+        <listitem>
+          <para>The <glossterm>backup root directory</glossterm> is set by
+          either ...</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>the option
+              <option>--root</option>=<replaceable>DIRECTORY</replaceable></para>
+            </listitem>
+
+            <listitem>
+              <para>the environment variable
+              <envar>COPYBACK_ROOT</envar></para>
+            </listitem>
+
+            <listitem>
+              <para>adding the <glossterm
+              linkend="glossentry.global-backup-root-directory">global backup
+              root directory</glossterm> and
+              <literal>users/<replaceable>USER</replaceable></literal>, where
+              <replaceable>USER</replaceable> is the name of the operating
+              system user</para>
+            </listitem>
+
+            <listitem>
+              <para>adding the <glossterm
+              linkend="glossentry.global-backup-root-directory">global backup
+              root directory</glossterm> and the <glossterm
+              linkend="glossentry.global-root-suffix">global root
+              suffix</glossterm>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+
+        <listitem>
+          <para>The <glossterm
+          linkend="glossentry.global-backup-root-directory">global backup root
+          directory</glossterm> is set by either ...</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>the option
+              <option>--root-global</option>=<replaceable>DIRECTORY</replaceable></para>
+            </listitem>
+
+            <listitem>
+              <para>the environment variable
+              <envar>COPYBACK_ROOT_GLOBAL</envar></para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </orderedlist>
+    </section>
+
+    <section id="sect.descr.naming-schemes" xreflabel="Project naming schemes">
+      <title>Project naming schemes</title>
+
+      <para>The <glossterm linkend="glossentry.project-name">project
+      name</glossterm> is constructed from the <glossterm
+      linkend="glossentry.project-name-head">project name head</glossterm> and
+      the <glossterm linkend="glossentry.project-name-tail">project name
+      tail</glossterm> separated by a dash ('/').</para>
+
+      <para>The reason for having the <glossterm
+      linkend="glossentry.project-name-head">project name head</glossterm> is
+      to reduce the risk of having the same <glossterm
+      linkend="glossentry.project-name">project name</glossterm> for different
+      source.</para>
+
+      <warning>
+        <para>Giving two different sources the same name can cause
+        <command>copyback</command> to overwrite backups of one source with
+        backups of the other source.</para>
+      </warning>
+
+      <section>
+        <title>Default naming schemes for files and directories</title>
+
+        <para><command>copyback</command> uses a default naming scheme for
+        sources that are files or directories:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>If the file/directory is a file in a (a subdirectory of) the
+            users home directory. The <option
+            role="copyback">--suffix-home</option> naming scheme will be
+            used.</para>
+
+            <para>The name will be</para>
+
+            <para><literal>home</literal> <literal>/</literal>
+            <replaceable>absolute-name-of-source-file-with-name-of-home-directory-removed</replaceable></para>
+
+            <itemizedlist>
+              <listitem>
+                <para><literal>home</literal> is the <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm></para>
+              </listitem>
+
+              <listitem>
+                <para><replaceable>absolute-name-of-source-file-with-name-of-home-directory-removed</replaceable>
+                is taken from the absolute filename of the source file. This
+                is the <glossterm
+                linkend="glossentry.project-name-tail">project name
+                tail</glossterm>.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+
+          <listitem>
+            <para>If the file/directory is a file in a (a subdirectory of)
+            outside the users home directory. The <option
+            role="copyback">--absolute</option> naming scheme will be
+            used.</para>
+
+            <para>The name will be</para>
+
+            <para><literal>root</literal> <literal>/</literal>
+            <replaceable>absolute-name-of-source-file</replaceable></para>
+
+            <itemizedlist>
+              <listitem>
+                <para><literal>root</literal> is the <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm></para>
+              </listitem>
+
+              <listitem>
+                <para><replaceable>absolute-name-of-source-file</replaceable>
+                is the absolute filename of the source file. This is the
+                <glossterm linkend="glossentry.project-name-tail">project name
+                tail</glossterm>.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </orderedlist>
+      </section>
+
+      <section>
+        <title>No default naming scheme for program output</title>
+
+        <para>A <glossterm linkend="glossentry.project-name-tail">project name
+        tail</glossterm> must be supplied using
+        <replaceable>--constant</replaceable>=<replaceable>NAME</replaceable>.</para>
+
+        <para>By default, the <glossterm
+        linkend="glossentry.project-name-head">project name head</glossterm>
+        is set to <literal>other</literal>.</para>
+      </section>
+
+      <section>
+        <title>Custom naming schemes</title>
+
+        <para>For any project, the name can be set by the user.</para>
+
+        <para>The <glossterm linkend="glossentry.project-name-head">project
+        name head</glossterm> can be set using
+        <option>--project-name-head</option>=<replaceable>NAME</replaceable>
+        or <option>--pnh</option>=<replaceable>NAME</replaceable>. It can also
+        be discarded by using these options without an argument.</para>
+
+        <para>See "<xref linkend="sect.cmd.backup.options.naming-scheme"/>"
+        for different ways to set the <glossterm
+        linkend="glossentry.project-name-tail">project name
+        tail</glossterm>.</para>
+      </section>
+    </section>
+
+    <section id="sect.description.rsync-usage" xreflabel="Usage of rsync">
+      <title>Usage of <command>rsync</command></title>
+
+      <para>Files and directories are copied using
+      <command>rsync</command>.</para>
+
+      <para><command>rsync</command> is always given at least the option
+      <option>--archive</option>. This copies directories recursively and
+      preserves most attributes. Symbolic links are copies as symbolic
+      links.</para>
+
+      <para>"<xref linkend="sect.cmd.backup.options.rsync-forward"/>"
+      describes options that are forwarded from <command>copyback</command> to
+      <command>rsync</command> without modification.</para>
+
+      <para>If the source is a directory and this directory contains a file
+      called <filename>.copyback-exclude</filename>, then
+      <command>rsync</command> exclude patterns will be read from it. This is
+      equivalently to using
+      <option>--exclude-from</option>=<replaceable>FILE</replaceable>. Files
+      matching any of the patterns will be excluded from the backup. The
+      patterns are like shell patterns. See the <command>rsync</command>
+      manual for details.</para>
+
+      <para>If <option role="copyback">--update</option> is used,
+      <command>rsync</command> is also given the option
+      <option>--delete-excluded</option>. This means that both files without
+      counterpart under SOURCE and excluded files are removed from the updated
+      backup.</para>
+    </section>
+  </section>
+
+  <section id="sect.cmd" xreflabel="Commands">
+    <title>Commands</title>
+
+    <section id="sect.cmd.backup"
+             xreflabel="backup - Creating or updating a backup">
+      <title><literal>backup</literal> - Creating and updating backups</title>
+
+      <para>Creates a new backup or updates an existing one.</para>
+
+      <section id="sect.cmd.backup.synopsis">
+        <title>Synopsis of <literal>backup</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">backup</arg>
+
+          <arg choice="opt">BACKUP-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="opt">BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">backup</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="opt">BACKUP-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">backup</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="opt">BACKUP-OPTIONS</arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="opt">BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">backup</arg>
+        </cmdsynopsis>
+
+        <para>Short alias: <literal>b</literal></para>
+
+        <para><replaceable>BACKUP-OPTIONS</replaceable> can appear both before
+        and after the command name.</para>
+
+        <para>The backup command is the default command. This means that the
+        command name can be left out if the string
+        <replaceable>SOURCE</replaceable> doesn't clash with any of the
+        command names or aliases.</para>
+      </section>
+
+      <section id="sect.cmd.backup.description">
+        <title>Description of <literal>backup</literal></title>
+
+        <para>Creates a new backup or updates an existing backup of the source
+        and puts it in the <glossterm
+        linkend="glossentry.project-directory">project
+        directory</glossterm>.</para>
+
+        <para>The date and time of the backup filename is set to the current
+        date and time. This also applies to updated backups.</para>
+
+        <para>If <replaceable>SOURCE</replaceable> is a file or directory
+        (<option>--file</option> or <option>--directory</option>), the backup
+        is a copy of it created with <command>rsync</command>. See "<xref
+        linkend="sect.description.rsync-usage"/>" and "<xref
+        linkend="sect.cmd.backup.options.rsync-forward"/>" for information
+        about how <command>rsync</command> is used.</para>
+
+        <para>If <replaceable>SOURCE</replaceable> is a program
+        (<option>--program</option>), the backup is a file with the contents
+        of what the program outputs to the standard output channel (stdout).
+        <replaceable>SOURCE</replaceable> is expected to be a command line
+        that can be executed. If executed the program results in a non-zero
+        exit status, no backup is created. If
+        <replaceable>SOURCE</replaceable> is '<literal>-</literal>' (dash),
+        the contents of standard input channel (stdin) is backed up.</para>
+
+        <para>By default, the filename of the backup file is printed (to
+        stdout) followed by asterisks if the backup is locked. This is the
+        output format specified by the general option <option
+        role="copyback">--print-filename-extra</option>. To be sure that the
+        filename only is printed, the general option <option
+        role="copyback">--print-filename</option> should be used.</para>
+
+        <para>Existing backups can be updated using --</para>
+
+        <para>"<xref linkend="sect.cmd.backup.options.default"/>" describes
+        which default values for some options.</para>
+      </section>
+
+      <section id="sect.cmd.backup.options.default"
+               xreflabel="Default options">
+        <title>Default options</title>
+
+        <para>If the <glossterm linkend="glossentry.source-type">source
+        type</glossterm> is not specified (using one of
+        <option>--file</option>, <option>--directory</option> and
+        <option>--program</option>) it is assumed to be either file or
+        directory. <glossterm linkend="glossentry.source">SOURCE</glossterm>
+        will be checked to determine which of these it is.</para>
+
+        <para>If a <glossterm
+        linkend="glossentry.project-naming-scheme">project naming
+        scheme</glossterm> is not specified, one will be derived from the
+        absolute filename of <glossterm linkend="glossentry.source"><glossterm
+        linkend="glossentry.source">SOURCE</glossterm></glossterm>. This
+        requires the <glossterm linkend="glossentry.source-type">source
+        type</glossterm> to be either file or directory.
+        <command>copyback</command> will not try to derive one automatically
+        if the <glossterm linkend="glossentry.source-type">source
+        type</glossterm> is program. If the files absolute filename begins
+        with the name of the current user's home directory (as given by the
+        shell environment variable <envar>HOME</envar>),
+        <option>--suffix-home</option> will be used. Otherwise
+        <option>--absolute</option> will be used.</para>
+      </section>
+
+      <section id="sect.cmd.backup.options">
+        <title>Options for <literal>backup</literal></title>
+
+        <section id="sect.cmd.backup.options.naming-scheme"
+                 xreflabel="Naming scheme options">
+          <title>Naming scheme options</title>
+
+          <para>These options set the <glossterm
+          linkend="glossentry.project-name">project name</glossterm> (directly
+          or indirectly). This project name has the form of a directory and is
+          appended to the <glossterm>backup root directory</glossterm> to form
+          the <glossterm linkend="glossentry.project-directory">project
+          directory</glossterm>. All backups for a source (the project source)
+          are stored in this <glossterm
+          linkend="glossentry.project-directory">project
+          directory</glossterm>.</para>
+
+          <para>When the project source is the output from a program,
+          <option>--constant</option> must be used.</para>
+
+          <variablelist>
+            <varlistentry>
+              <term><option>--absolute</option> | <option>-a</option></term>
+
+              <listitem>
+                <para>The project name is the same as the absolute filename of
+                <replaceable>SOURCE</replaceable>.</para>
+
+                <para>The <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm> will be defaulted to <literal>root</literal>
+                (equivalent to
+                <code><option>--project-name-head</option>=root</code>).</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--basename</option> | <option>-b</option></term>
+
+              <listitem>
+                <para>The project name is the basename of the (absolute
+                filename of) <replaceable>SOURCE</replaceable>. (This is the
+                string following the last slash ('/').)</para>
+
+                <para>The <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm> will be defaulted to <literal>other</literal>
+                (equivalent to
+                <code><option>--project-name-head</option>=other</code>).</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--constant</option>=<replaceable>NAME</replaceable>
+              | <option>-c</option> <replaceable>NAME</replaceable></term>
+
+              <listitem>
+                <para>A constant project name (used just as it is, not derived
+                from any other information). name can't begin with a "/" or
+                use the relative path components "." or "..".</para>
+
+                <para>The <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm> will be defaulted to <literal>other</literal>
+                (equivalent to
+                <code><option>--project-name-head</option>=other</code>).</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--suffix</option>=<replaceable>PREFIX-DIRECTORY</replaceable>
+              | <option>-s</option>
+              <replaceable>PREFIX-DIRECTORY</replaceable></term>
+
+              <listitem>
+                <para>The project name is the absolute file name of the source
+                file with this prefix removed.
+                <replaceable>PREFIX-DIRECTORY</replaceable> must really be a
+                prefix of the absolute source file name.
+                <replaceable>PREFIX-DIRECTORY</replaceable> must also be an
+                existing directory. It is the absolute path of
+                <replaceable>PREFIX-DIRECTORY</replaceable> that is used, not
+                <replaceable>PREFIX-DIRECTORY</replaceable> itself.</para>
+
+                <para>The <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm> will be defaulted to <literal>other</literal>
+                (equivalent to
+                <code><option>--project-name-head</option>=other</code>) if
+                the given prefix is not the users home directory. If it is, it
+                will be defaulted to <literal>home</literal>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--suffix-home</option> |
+              <option>-h</option></term>
+
+              <listitem>
+                <para>Special case of <option>--suffix</option>. The prefix is
+                automatically set to the home directory of the current
+                (effective) user.</para>
+
+                <para>This is the default naming scheme for files and
+                directories in the current users home directory.</para>
+
+                <para>The <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm> will be defaulted to <literal>home</literal>
+                (equivalent to
+                <code><option>--project-name-head</option>=home</code>).</para>
+
+                <para>The current users home directory is read from the shell
+                environment variable <envar>HOME</envar>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--project-name-head</option>[=<replaceable>STRING</replaceable>]
+              |
+              <option>--pnh</option>[=<replaceable>STRING</replaceable>]</term>
+
+              <listitem>
+                <para>With argument: sets the <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm> to <replaceable>STRING</replaceable>.</para>
+
+                <para>Without argument: removes the <glossterm
+                linkend="glossentry.project-name-head">project name
+                head</glossterm>. The project name will consist of only the
+                <glossterm linkend="glossentry.project-name-tail">project name
+                tail</glossterm>.</para>
+
+                <para>If <option>--project-name-head</option> is not used, the
+                default value will be used. This default value depends on the
+                naming scheme used.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+
+        <section id="sect.cmd.backup.options.rsync-forward"
+                 xreflabel="Options forwarded to rsync">
+          <title>Options forwarded to <command>rsync</command></title>
+
+          <para>The following options are <command>rsync</command> options
+          that <command>copyback</command> accept. <command>copyback</command>
+          forwards them to <command>rsync</command> without modification. A
+          short description is included here. Consult the
+          <command>rsync</command> manual for more information.</para>
+
+          <variablelist>
+            <varlistentry>
+              <term>--chmod=MODE</term>
+
+              <listitem>
+                <para>Apply one or more comma-separated "chmod" strings to the
+                permission of the source files. This is a way to modify the
+                permission of backed up files. For example, it is useful if
+                the source files are on a file system that don't handle
+                permissions well.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>--exclude=PATTERN</term>
+
+              <listitem>
+                <para>Exclude files matching the shell pattern
+                <replaceable>PATTERN</replaceable>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>--exclude-from=<replaceable>FILE</replaceable></term>
+
+              <listitem>
+                <para>Read <command>rsync</command> exclude patterns from the
+                file <replaceable>FILE</replaceable>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>--include=<replaceable>PATTERN</replaceable></term>
+
+              <listitem>
+                <para>Include files matching the shell pattern
+                <replaceable>PATTERN</replaceable>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>--include-from=<replaceable>FILE</replaceable></term>
+
+              <listitem>
+                <para>Read <command>rsync</command> include patterns from the
+                file <replaceable>FILE</replaceable>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>--cvs-exclude</term>
+
+              <listitem>
+                <para>Use the same exclusion mechanism as
+                <command>cvs</command> does (The "Concurrent Versions
+                System"). Consult the <command>cvs</command> manual for more
+                information.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>--filter=<replaceable>RULE</replaceable></term>
+
+              <listitem>
+                <para>This requires a version of <command>rsync</command> that
+                supports the option <option
+                role="rsync">--filter</option>.</para>
+
+                <!--[XXX tell which version this is? Also update the corresponding comment for other options.]-->
+
+                <para>Add the <command>rsync</command> filtering rule
+                <replaceable>RULE</replaceable>. Filter rules are a more
+                advanced way of specifying files to include and
+                exclude.</para>
+
+                <example>
+                  <title>Examples of filter rules</title>
+
+                  <itemizedlist>
+                    <listitem>
+                      <para>To exclude all files that matches the shell
+                      pattern "*.o":</para>
+
+                      <programlisting>- *.o</programlisting>
+
+                      <para>This excludes all files that matches "*.o", in the
+                      current (where the <filename>.rsync-filter</filename>
+                      files is found) directory and all its
+                      subdirectories!</para>
+                    </listitem>
+
+                    <listitem>
+                      <para>To exclude the file program, only from the current
+                      directory:</para>
+
+                      <programlisting>- /program</programlisting>
+                    </listitem>
+                  </itemizedlist>
+                </example>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option role="copyback">-F</option></term>
+
+              <listitem>
+                <para>Causes <command>rsync</command> (the program that copies
+                files and directories to backups) to read "filter rules" from
+                a file called <filename>.rsync-filter</filename>.</para>
+
+                <para><command>rsync</command> looks for this file in the
+                <replaceable>SOURCE</replaceable> directory, and each of its
+                subdirectories. If there is one such file,
+                <command>rsync</command> include/exclude filters are read from
+                it and applies them to the files in the directory itself and
+                its subdirectories.</para>
+
+                <para>See the option <option role="copyback">--filter</option>
+                (or the <command>rsync</command> manual, of course) for a
+                description of <command>rsync</command> filter rules.</para>
+
+                <!--XXX exempel med "global" exkludering - *.hi
+                 "lokal" exkludering - /foo-->
+
+                <para>Only meaningful when <replaceable>SOURCE</replaceable>
+                is a directory.</para>
+
+                <para>This runs <command>rsync</command> with the <option
+                role="rsync">-F</option> option.</para>
+
+                <note>
+                  <para>This requires a version of <command>rsync</command>
+                  that supports the option <option
+                  role="rsync">--filter</option>.</para>
+                </note>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+
+        <section id="sect.cmd.backup.options.how-to-backup">
+          <title>Other options</title>
+
+          <variablelist>
+            <varlistentry>
+              <term><option>--directory</option></term>
+
+              <listitem>
+                <para>Says that the source is a directory. With this options,
+                <command>copyback</command> fails if the source is not a
+                directory.</para>
+
+                <para>If none of the options <option>--file</option>,
+                <option>--directory</option> and <option>--program</option>
+                are given, the source must be a file or directory.
+                <command>copyback</command> will look at the source to see
+                what it is.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--extension</option>=<replaceable>EXTENSION</replaceable>
+              | <option>-E</option>
+              <replaceable>EXTENSION</replaceable></term>
+
+              <listitem>
+                <para>Only available when the source is the output from a
+                program (<option>--program</option>).</para>
+
+                <para><replaceable>EXTENSION</replaceable> is appended,
+                together with a separating dot, to the backup file.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--file</option></term>
+
+              <listitem>
+                <para>Says that the source is a file (not a directory). With
+                this options, <command>copyback</command> fails if the source
+                is not a file.</para>
+
+                <para>If none of the options <option>--file</option>,
+                <option>--directory</option> and <option>--program</option>
+                are given, the source must be a file or directory.
+                <command>copyback</command> will look at the source to see
+                what it is.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--force</option> | <option>--f</option></term>
+
+              <listitem>
+                <para>Force. Makes <command>copyback</command> update locked
+                backups.</para>
+
+                <para>Updates (<option role="copyback">--update</option>) will
+                be able to operate on locked backups. If a locked backup is
+                updated, the resulting backup will also be locked.</para>
+
+                <para>Backups locked by write protected lock files are never
+                updated, not even using <option>--force</option>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--gzip</option> | <option>-z</option></term>
+
+              <listitem>
+                <para>Compress all backup files using
+                <command>gzip</command>.</para>
+
+                <para>If the project is a directory, and
+                <option>--tar</option> is not also used, all files in the
+                directory will be compressed individually! If
+                <option>--tar</option> is also used, the directory will first
+                be archived using <command>tar</command>, and then this file
+                will be compressed using <command>gzip</command>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--lock</option> | <option>-L</option></term>
+
+              <listitem>
+                <para>Lock the backup, preventing some of the
+                <command>copyback</command> commands to operate on it (unless
+                <option>--force</option>'d). But even if
+                <option>--force</option> is used, backups with a
+                write-protected lock file will note be operated upon.</para>
+
+                <para>A backup is locked if there exists a corresponding lock
+                file. A lock file is an ordinary file in the same directory as
+                the backup. The name is the name of the backup, excluding any
+                extension, and with the new extension
+                "<literal>.lock</literal>" added.</para>
+
+                <para>Lock files are created with a permission that allows
+                writing.</para>
+
+                <para>A locked backup can be unlocked using
+                `<command>copyback</command> <literal>unlock</literal>', or by
+                removing its corresponding lock file manually.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option role="copyback">--no-delete</option> | <option
+              role="copyback">-n</option></term>
+
+              <listitem>
+                <para>Only applicable together with <option
+                role="copyback">--update</option> and when the source is a
+                directory.</para>
+
+                <para>Prevent files of the updated backup from being deleted.
+                This affects both files that are excluded from the backup
+                using <command>rsync</command> filters and files in the backup
+                without any counter part in
+                <replaceable>SOURCE</replaceable>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--program</option></term>
+
+              <listitem>
+                <para>Says that the source is the output from a program.
+                <replaceable>SOURCE</replaceable> is the program to run. The
+                output from it (to stdout) is backed up.</para>
+
+                <para>No backup is created if the program exits with non-zero
+                status.</para>
+
+                <para>The constant (<option>--constant</option>) naming scheme
+                must be used.</para>
+
+                <para>If <replaceable>SOURCE</replaceable> is
+                '<literal>-</literal>' (dash), the contents of stdin is backed
+                up.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>--rsync-filter</term>
+
+              <listitem>
+                <para>This requires a version of <command>rsync</command> that
+                supports the option <option
+                role="rsync">--filter</option>.</para>
+
+                <para>Same as <option>-F</option>. (See "<xref
+                linkend="sect.cmd.backup.options.rsync-forward"/>".)</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--source</option>=<replaceable>SOURCE</replaceable></term>
+
+              <listitem>
+                <para>Sets the source file, directory or program to
+                <replaceable>SOURCE</replaceable>.</para>
+
+                <para>This is an alternative to giving the source as the first
+                non-option argument.</para>
+
+                <para>The reason for having this option is to make shell
+                aliases more usefull.</para>
+
+                <para>For example, if a source <replaceable>X</replaceable> is
+                often backed up, a shell alias <code>cbx</code> could be
+                defined as</para>
+
+                <para><code><command>copyback</command>
+                <replaceable>GENERAL-OPTIONS</replaceable>
+                <replaceable>BACKUP-OPTIONS</replaceable>
+                <option>--source</option>=<replaceable>X</replaceable></code></para>
+
+                <para>where <replaceable>GENERAL-OPTIONS</replaceable>
+                <replaceable>BACKUP-OPTIONS</replaceable> are options used for
+                backing up <replaceable>X</replaceable>.</para>
+
+                <para>Now, executing <code>cbx</code> without arguments will
+                create a backup.</para>
+
+                <para>Listing backups of X using <literal>list</literal> will
+                be as easy as `<code>cbx list</code>', because list uses the
+                backup options to figure out the "project directory". This
+                applies to all commands that accesses the project directory
+                and can derive it from the backup options. These include
+                <literal>list</literal>, <literal>clean</literal>,
+                <literal>find</literal>, <literal>lock</literal> and
+                <literal>unlock</literal>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option role="copyback">--update</option> | <option
+              role="copyback">-u</option></term>
+
+              <listitem>
+                <para>Updates an existing backup with the current contents of
+                the project.</para>
+
+                <para>Specify which backup to update using <option
+                role="copyback">--last</option>, <option
+                role="copyback">--date</option> or <option
+                role="copyback">--tag</option>.</para>
+
+                <para>Locked backups will not be updated unless
+                <option>--force</option> is given.</para>
+
+                <para>The backup to update is specified using
+                <option>--last</option>, <option>--date</option> or
+                <option>--tag</option>.</para>
+
+                <para>The date and time is updated to the current date and
+                time.</para>
+
+                <para>Locked backups can be forced to be updated using
+                <option>--force</option>. Then, if a locked backup is updated,
+                the resulting backup will also be locked (regardless of wether
+                <option>--lock</option> is used or not).</para>
+
+                <para>The option <option>--delete-excluded</option> is passed
+                to <command>rsync</command> if <option>--no-delete</option> is
+                not used.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option role="copyback">--update-or-create</option> |
+              <option role="copyback">-U</option></term>
+
+              <listitem>
+                <para>Like --update, but also creates a new backup if no
+                existing is found.</para>
+
+                <para>Specify which backup to update using <option
+                role="copyback">--last</option>, <option
+                role="copyback">--date</option> or <option
+                role="copyback">--tag</option>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>--assign-tag=<replaceable>TAG</replaceable> | -g
+              <replaceable>TAG</replaceable></term>
+
+              <listitem>
+                <para>Marks the new or updated backup with this tag.</para>
+
+                <para>If a updated backup has a tag, it is replaced by this
+                new tag.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option role="copyback">--last</option> | <option
+              role="copyback">-l</option></term>
+
+              <listitem>
+                <para>Used together with <option
+                role="copyback">--update</option>. Updates the last
+                backup.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option
+              role="copyback">--date</option>=<replaceable>DATE</replaceable>
+              | <option role="copyback">-d</option>
+              <replaceable>DATE</replaceable></term>
+
+              <listitem>
+                <para>Used together with <option
+                role="copyback">--update</option>. Updates the backup for the
+                given datetime.</para>
+
+                <para><replaceable>DATE</replaceable> can be in either the
+                format <literal>YYYYMMDD-hhmm[ss]</literal> or
+                <literal>YYYY-MM-DD hh:mm[:ss]</literal>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option
+              role="copyback">--tag</option>=<replaceable>TAG</replaceable> |
+              <option role="copyback">-t</option>
+              <replaceable>TAG</replaceable></term>
+
+              <listitem>
+                <para>Used together with <option
+                role="copyback">--update</option>. Updates the backup with the
+                given tag <replaceable>TAG</replaceable>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term><option>--tar</option> | <option>-T</option></term>
+
+              <listitem>
+                <para>Only available when the source is a directory.</para>
+
+                <para>Store the backup in a <command>tar</command> archive
+                file.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+      </section>
+    </section>
+
+    <section id="sect.cmd.clean">
+      <title><literal>clean</literal> - Removing old backups</title>
+
+      <para>Removes all but the latest, non-locked, backups for a
+      project.</para>
+
+      <section id="sect.cmd.clean.synopsis">
+        <title>Synopsis of <literal>clean</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">clean</arg>
+
+          <arg choice="opt">CLEAN-OPTIONS</arg>
+
+          <group>
+            <arg choice="plain"><option
+            role="copyback">--explicit</option></arg>
+
+            <arg choice="plain"><option role="copyback">-e</option></arg>
+          </group>
+
+          <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">clean</arg>
+
+          <arg choice="opt">CLEAN-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">clean</arg>
+
+          <arg choice="opt">CLEAN-OPTIONS</arg>
+        </cmdsynopsis>
+
+        <para>The project directory can be given either explicitly (the first
+        syntax) or implicitly (the last two syntaxes). When giving it
+        implicitly, the same source and naming options used for creating
+        backups should be used. Other backup options are ignored.</para>
+      </section>
+
+      <section id="sect.cmd.clean.description">
+        <title>Description of <literal>clean</literal></title>
+
+        <para>The basename of each backup removed is printed to standard
+        output (one per line).</para>
+
+        <para>The latest backup is never removed, regardless of whether it is
+        locked or not.</para>
+
+        <para>Locked backups can be cleaned using <option>--force</option>.
+        But even using --force, if the backup cannot be unlocked (see <link
+        linkend="sect.cmd.unlock">unlock</link>), the backup will not be
+        removed.</para>
+
+        <para>To clean the given project directory and also all subdirectories
+        of it, use <option>--recursive</option>.</para>
+      </section>
+
+      <section id="sect.cmd.clean.options">
+        <title>Options for <literal>clean</literal></title>
+
+        <variablelist>
+          <varlistentry>
+            <term><option>--force</option> | <option>-f</option></term>
+
+            <listitem>
+              <para>Also remove locked backups who's lock file is not
+              write-protected and can be removed successfully.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>--recursive | -r</term>
+
+            <listitem>
+              <para>Also clean all subdirectories of the given project
+              directory that contain backups.</para>
+
+              <para>Directories that are <command>copyback</command> backups
+              themselves are not cleaned.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+    </section>
+
+    <section id="sect.cmd.find">
+      <title><literal>find</literal> - Finding project directories</title>
+
+      <para>Look for directories that store <command>copyback</command>
+      backups, under a given directory, and print the name of these.</para>
+
+      <section id="sect.cmd.find.synopsis">
+        <title>Synopsis of <literal>find</literal></title>
+
+        <para>Too look under the <glossterm>backup root
+        directory</glossterm>:</para>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">find</arg>
+        </cmdsynopsis>
+
+        <para>Too look under an explicit directory or a <glossterm
+        linkend="glossentry.project-directory">project
+        directory</glossterm>:</para>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">find</arg>
+
+          <group>
+            <arg choice="plain"><option
+            role="copyback">--explicit</option></arg>
+
+            <arg choice="plain"><option role="copyback">-e</option></arg>
+          </group>
+
+          <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">find</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">find</arg>
+        </cmdsynopsis>
+
+        <para>When giving the directory implicitly, use the same source and
+        naming options as for creating backups. Options other than those for
+        setting the <glossterm>backup root directory</glossterm> and
+        <glossterm linkend="glossentry.project-naming-scheme">project naming
+        scheme</glossterm> are ignored.</para>
+      </section>
+
+      <section id="sect.cmd.find.description">
+        <title>Description of <literal>find</literal></title>
+
+        <para><command>copyback</command> looks in all subdirectories of the
+        given <replaceable>DIRECTORY</replaceable>, or the <glossterm
+        linkend="glossentry.backup-root-directory">backup root
+        directory</glossterm> if no argument is given, for directories that
+        contain <command>copyback</command> backups. The names of these,
+        relative <replaceable>DIRECTORY</replaceable>, are printed. If
+        <replaceable>DIRECTORY</replaceable> stores backups itself, a dot
+        ('.') is printed.</para>
+
+        <para>The output is not sorted to any particular order.</para>
+      </section>
+    </section>
+
+    <section id="sect.cmd.list">
+      <title><literal>list</literal> - Listing backups of a project</title>
+
+      <para>List the exisisting backups for a project in creation time
+      order.</para>
+
+      <section id="sect.cmd.list.synopsis">
+        <title>Synopsis of <literal>list</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">list</arg>
+
+          <group>
+            <arg choice="plain"><option
+            role="copyback">--explicit</option></arg>
+
+            <arg choice="plain"><option role="copyback">-e</option></arg>
+          </group>
+
+          <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">list</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">list</arg>
+        </cmdsynopsis>
+
+        <para>Short alias: <literal>l</literal></para>
+
+        <para>Short alias: <literal>lf</literal>: Adds <option
+        role="copyback">--print-formatted</option>.</para>
+
+        <para>The project directory can be given either explicitly (the first
+        syntax) or implicitly (the last two syntaxes). When giving it
+        implicitly, the same source and naming options used for creating
+        backups should be used. Other backup options are ignored.</para>
+      </section>
+
+      <section id="sect.cmd.list.description">
+        <title>Description of <literal>list</literal></title>
+
+        <para>List the existing backups for a project in creation time
+        order.</para>
+
+        <para>An asterisks ('*') is appended to the name of locked backups:
+        One asterisk if the lock file is writable, two if it is not.</para>
+
+        <para>Each backup is presented with its filename, or in a formatted
+        manner, depending on <option>--print-filename</option> and
+        <option>--print-formatted</option>. <option>--print-formatted</option>
+        is the default.</para>
+      </section>
+    </section>
+
+    <section id="sect.cmd.lock"
+             xreflabel="lock - Preventing existing backups from updating">
+      <title><literal>lock</literal> - Preventing backups from getting
+      updated</title>
+
+      <para>Locks backups so that later <command>copyback</command>
+      invocations <emphasis>can not</emphasis> update them (unless
+      <option>--force</option> is used).</para>
+
+      <section id="sect.cmd.lock.synopsis">
+        <title>Synopsis of <literal>lock</literal></title>
+
+        <para>Locking a single backup by giving the backup file name:</para>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">lock</arg>
+
+          <arg choice="plain"><replaceable>BACKUP-FILE</replaceable></arg>
+        </cmdsynopsis>
+
+        <para>Locking by giving the project directory, together with options
+        that tell which backups to lock:</para>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">lock</arg>
+
+          <arg choice="req">LOCK-OPTIONS</arg>
+
+          <group>
+            <arg choice="plain"><option
+            role="copyback">--explicit</option></arg>
+
+            <arg choice="plain"><option role="copyback">-e</option></arg>
+          </group>
+
+          <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">lock</arg>
+
+          <arg choice="plain"><arg choice="req">LOCK-OPTIONS</arg></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">lock</arg>
+
+          <arg choice="plain"><arg choice="req">LOCK-OPTIONS</arg></arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <para>The project directory can be given either explicitly (the first
+        syntax) or implicitly (the last two syntaxes). When giving it
+        implicitly, the same source and naming options used for creating
+        backups should be used. Other backup options are ignored.</para>
+      </section>
+
+      <section id="sect.cmd.lock.description">
+        <title>Description of <literal>lock</literal></title>
+
+        <para>Locking backups prevents later invocations of
+        <command>copyback</command> to operate on them (unless forced to,
+        using <option>--force</option>). But even if <option>--force</option>
+        is used, backups with a write-protected lock file will note be
+        operated upon.</para>
+
+        <para>Whether the lock files created by <command>copyback</command> is
+        write-protected or not depends on the current "umask" - "the file
+        creation mask". This is usually set to give the user write-access to
+        files. In this case lock files will not be write-protected. In most
+        shells, you can type <command>umask</command> to see the current
+        "umask".</para>
+
+        <para>The name of all backup files that are locked are printed,
+        including names of backups that are already locked.</para>
+
+        <para>Nothing is printed to stdout if the project does not contain any
+        backups.</para>
+
+        <!-- TODO Stämmer det följande? Tror inte det, låsfiler har väll bara samma -->
+
+        <!-- förnamn: -->
+
+        <para>A lock is represented as a file in the same directory as the
+        backup file. The lock has the same filename as the backup file except
+        for the extension. Lock files have the the extension
+        "<literal>.lock</literal>".</para>
+
+        <para>The contents of a lock file is irrelevant. If there exists a
+        directory with the same name as a lock file would have, the behaviour
+        of <command>copyback</command> is undefined.</para>
+
+        <para>A lock can be removed using the <literal>unlock</literal>
+        command.</para>
+      </section>
+
+      <section id="sect.cmd.lock.options">
+        <title>Options for <literal>lock</literal></title>
+
+        <variablelist>
+          <varlistentry>
+            <term><option>--last</option> | <option>-l</option></term>
+
+            <listitem>
+              <para>Lock the last backup of a project.</para>
+
+              <para>The name of the last backup is printed, even if it was
+              already locked.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><option>--date</option>=<replaceable>DATE</replaceable> |
+            <option>-d</option> <replaceable>DATE</replaceable></term>
+
+            <listitem>
+              <para>Lock the backup for the given date.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><option>--tag</option>=<replaceable>TAG</replaceable> |
+            <option>-t</option> <replaceable>TAG</replaceable></term>
+
+            <listitem>
+              <para>Lock the backup with the given tag.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><option>--all</option></term>
+
+            <listitem>
+              <para>Lock all backups of a project.</para>
+
+              <para>The name of all backups are printed, even backups already
+              locked.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+    </section>
+
+    <section id="sect.cmd.print-backup-root-directory">
+      <title><literal>backup-root-directory</literal> - Printing the
+      <glossterm linkend="glossentry.backup-root-directory">backup root
+      directory</glossterm></title>
+
+      <para>Prints the <glossterm
+      linkend="glossentry.backup-root-directory">backup root
+      directory</glossterm>.</para>
+
+      <section>
+        <title>Synopsis of <literal>backup-root-directory</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">backup-root-directory</arg>
+        </cmdsynopsis>
+
+        <para>Short alias: 'brd'.</para>
+      </section>
+
+      <section>
+        <title>Description of
+        <literal>print-backup-root-directory</literal></title>
+
+        <para>Prints the <glossterm
+        linkend="glossentry.backup-root-directory">backup root
+        directory</glossterm> that would be used if the same options and
+        environment variables were used together with a different
+        command.</para>
+      </section>
+    </section>
+
+    <section id="sect.cmd.print-project-directory">
+      <title><literal>project-directory</literal> - Printing the <glossterm
+      linkend="glossentry.project-directory">project
+      directory</glossterm></title>
+
+      <para>Print the <glossterm
+      linkend="glossentry.project-directory">project
+      directory</glossterm>.</para>
+
+      <section>
+        <title>Synopsis of <literal>project-directory</literal></title>
+
+        <para>The syntax is the same as for the command
+        <literal>backup</literal>, except that any
+        <replaceable>BACKUP-OPTIONS</replaceable> must precede the command
+        name.</para>
+
+        <para>Short alias: 'pd'.</para>
+      </section>
+
+      <section>
+        <title>Description of <literal>project-directory</literal></title>
+
+        <para>Prints the <glossterm
+        linkend="glossentry.project-directory">project directory</glossterm>
+        that would be used if the same options and environment variables were
+        used together with a different command.</para>
+      </section>
+    </section>
+
+    <section id="sect.cmd.print-project-name">
+      <title><literal>project-name</literal> - Printing the <glossterm
+      linkend="glossentry.project-name">project name</glossterm></title>
+
+      <para>Prints the <glossterm linkend="glossentry.project-name">project
+      name</glossterm>.</para>
+
+      <section>
+        <title>Synopsis of <literal>project-name</literal></title>
+
+        <para>The syntax is the same as for the command
+        <literal>backup</literal>, except that any
+        <replaceable>BACKUP-OPTIONS</replaceable> must precede the command
+        name.</para>
+
+        <para>Short alias: 'pn'.</para>
+      </section>
+
+      <section>
+        <title>Description of <literal>project-name</literal></title>
+
+        <para>Prints the <glossterm linkend="glossentry.project-name">project
+        name</glossterm> that would be used if the same options and
+        environment variables were used together with a different
+        command.</para>
+      </section>
+    </section>
+
+    <section id="sect.cmd.tag" xreflabel="tag - Marks a backup with a string">
+      <title><literal>tag</literal> - Marking a backup with a tag
+      string</title>
+
+      <para>Marks a backup with a unique string so that it can later be
+      referred to by this string.</para>
+
+      <section id="sect.cmd.tag.synopsis">
+        <title>Synopsis of <literal>tag</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">tag</arg>
+
+          <group>
+            <arg choice="plain"><option
+            role="copyback">--explicit</option></arg>
+
+            <arg choice="plain"><option role="copyback">-e</option></arg>
+          </group>
+
+          <arg choice="opt">TAG-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>STRING</replaceable></arg>
+
+          <arg choice="plain"><replaceable>FILE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">tag</arg>
+
+          <arg choice="opt">TAG-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>STRING</replaceable></arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">tag</arg>
+
+          <arg choice="opt">TAG-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>STRING</replaceable></arg>
+        </cmdsynopsis>
+
+        <para>The project directory can be given either explicitly (the first
+        syntax) or implicitly (the last two syntaxes). When giving it
+        implicitly, the same source and naming options used for creating
+        backups should be used. Other backup options are ignored.</para>
+      </section>
+
+      <section id="sect.cmd.tag.description">
+        <title>Description of <literal>tag</literal></title>
+
+        <para>The backup can later be referred to using
+        <option>--tag</option>=STRING, for example, when updating a backup.
+        The string is also shown by when listing backups with
+        <literal>list</literal>.</para>
+
+        <para>The tag string must be unique among all backups for each
+        project.</para>
+      </section>
+
+      <section id="sect.cmd.tag.options" xreflabel="Options for tag"
+               xml:base="">
+        <title>Options for <literal>tag</literal></title>
+
+        <variablelist>
+          <varlistentry>
+            <term><option>--last</option></term>
+
+            <listitem>
+              <para>Tags the last backup (of a project's backups).</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><option>--date</option>=<replaceable>DATE</replaceable></term>
+
+            <listitem>
+              <para>Tags the backup with the given date (of a project's
+              backups).</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><option>--tag</option>=<replaceable>STRING</replaceable></term>
+
+            <listitem>
+              <para>Tags the backup with the given tag (of a project's
+              backups).</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+    </section>
+
+    <section id="sect.cmd.untag"
+             xreflabel="untag - Removing a tag from a backup">
+      <title><literal>untag</literal> - Removing a tag from a backup</title>
+
+      <para>Removes a tag from a backup.</para>
+
+      <section id="sect.cmd.untag.synopsis">
+        <title>Synopsis of <literal>untag</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">untag</arg>
+
+          <group>
+            <arg choice="plain"><option
+            role="copyback">--explicit</option></arg>
+
+            <arg choice="plain"><option role="copyback">-e</option></arg>
+          </group>
+
+          <arg choice="opt">TAG-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>FILE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">untag</arg>
+
+          <arg choice="opt">TAG-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">untag</arg>
+
+          <arg choice="opt">TAG-OPTIONS</arg>
+        </cmdsynopsis>
+
+        <para>The project directory can be given either explicitly (the first
+        syntax) or implicitly (the last two syntaxes). When giving it
+        implicitly, the same source and naming options used for creating
+        backups should be used. Other backup options are ignored.</para>
+
+        <para>The options are the same as <xref
+        linkend="sect.cmd.tag.options"/>.</para>
+      </section>
+    </section>
+
+    <section id="sect.cmd.unlock">
+      <title><literal>unlock</literal> - Unlocking backups</title>
+
+      <para>Unlocks a backup so that later <command>copyback</command>
+      invocations <emphasis>can</emphasis> operate on it. A backup will not be
+      unlocked if its lock file is write-protected. A write-protected lock
+      file must be removed manually.</para>
+
+      <para>The <literal>unlock</literal> command is the reverse of to the
+      <literal>lock</literal> command. It is used in the same way, so see
+      "<xref linkend="sect.cmd.lock"/>" for details.</para>
+    </section>
+  </section>
+
+  <section id="sect.general-options">
+    <title>General options</title>
+
+    <para>These general options are applicable to all commands.</para>
+
+    <section id="sect.cmd.general-options.bak-root"
+             xreflabel="Options for setting the backup root directory">
+      <title>Options for setting the <glossterm
+      linkend="glossentry.backup-root-directory">backup root
+      directory</glossterm></title>
+
+      <para>If <option>--root</option> or <option>--root-global</option> is
+      not used, the environment variables <envar>COPYBACK_ROOT</envar> and
+      <envar>COPYBACK_ROOT_GLOBAL</envar> are used, if they exist.</para>
+
+      <variablelist>
+        <varlistentry>
+          <term><option>--root</option>=<replaceable>DIRECTORY</replaceable></term>
+
+          <listitem>
+            <para>Sets the "backup root directory" to
+            <replaceable>DIRECTORY</replaceable>.</para>
+
+            <para>Overrides the environment variables
+            <envar>COPYBACK_ROOT</envar> and
+            <envar>COPYBACK_ROOT_GLOBAL</envar>.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry id="option.general.global-root"
+                      xreflabel="--global-root">
+          <term><option>--root-global</option>=<replaceable>DIRECTORY</replaceable></term>
+
+          <listitem>
+            <para>Sets the "global backup root directory" to
+            <replaceable>DIRECTORY</replaceable>.</para>
+
+            <para>If <option>--root-global-suffix</option> is not given, the
+            "backup root directory" is set to
+            <filename><replaceable>DIRECTORY</replaceable>/users/<replaceable>USER</replaceable></filename>.
+            <replaceable>USER</replaceable> is the name of the current
+            (effective) operating system user.</para>
+
+            <para>If
+            <option>--root-global-suffix</option>=<replaceable>SUFFIX</replaceable>
+            is given, the backup root directory is set to
+            <filename><replaceable>DIRECTORY</replaceable>/<replaceable>SUFFIX</replaceable></filename>.</para>
+
+            <para>Overrides the environment variables
+            <envar>COPYBACK_ROOT</envar> and
+            <envar>COPYBACK_ROOT_GLOBAL</envar>.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--root-global-suffix</option>=<replaceable>SUFFIX</replaceable></term>
+
+          <listitem>
+            <para>Only valid together with <option>--root-global</option> or
+            the environment variable
+            <envar>COPYBACK_ROOT_GLOBAL</envar>.</para>
+
+            <para>Replaces the default string appended to the "global backup
+            root directory" to <replaceable>SUFFIX</replaceable>. See the
+            option <xref linkend="option.general.global-root"/> for more
+            information.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+
+    <section id="sect.general-options.other">
+      <title>Other general options</title>
+
+      <variablelist>
+        <varlistentry>
+          <term><option role="copyback">--print-filename</option> | <option
+          role="copyback">--prfn</option></term>
+
+          <listitem>
+            <para>Present backups by printing their filename.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option role="copyback">--print-filename-extra</option> |
+          <option role="copyback">--prfne</option></term>
+
+          <listitem>
+            <para>Present backups by printing their filename followed by
+            asterisks indicating lock status.</para>
+
+            <para>This is the default.</para>
+
+            <para>One asterisk indicates a locked backup. Two asterisks
+            indicates that the lock file is write protected. (This means that
+            <command>copyback</command> won't modify or remove the backup, not
+            even using <option>--force</option>).</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option role="copyback">--print-formatted</option> | <option
+          role="copyback">--prft</option></term>
+
+          <listitem>
+            <para>Present backups by printing formatted information.</para>
+
+            <para>One asterisk indicates a locked backup. Two asterisks
+            indicates that the lock file is write protected. (This means that
+            <command>copyback</command> won't modify or remove the backup, not
+            even using <option>--force</option>).</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--version</option> | <option>-V</option></term>
+
+          <listitem>
+            <para>Print program version and exit successfully.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--help</option></term>
+
+          <listitem>
+            <para>Print help and exit successfully.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--debug</option></term>
+
+          <listitem>
+            <para>Run the program in a special mode suitable for testing and
+            debugging.</para>
+
+            <warning>
+              <para>This options modifies the command line syntax and the
+              behaviour of the commands.</para>
+
+              <para>Don't use it unless you are programming the
+              <command>copyback</command> program!</para>
+            </warning>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+  </section>
+
+  <section id="sect.exit-status">
+    <title>Exit status</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>0</term>
+
+        <listitem>
+          <para>Success.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>1</term>
+
+        <listitem>
+          <para>Syntax or usage error.</para>
+
+          <para>Can be a syntax error reported by <command>rsync</command>.
+          Then it is one of the options forwarded to <command>rsync</command>
+          that causes the error (<xref
+          linkend="sect.cmd.backup.options.rsync-forward"/>).</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>2</term>
+
+        <listitem>
+          <para>Error creating the backup. No backup has been created.</para>
+
+          <para>There are several reasons for this failure. The most common is
+          probably that <replaceable>SOURCE</replaceable> is not an existing
+          file/directory. Another reason is If
+          <replaceable>SOURCE</replaceable> should be a program
+          (<option>--program</option>) and running it results in a non-zero
+          exit status.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>100</term>
+
+        <listitem>
+          <para>Feature not implemented.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>101</term>
+
+        <listitem>
+          <para>Internal error.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section id="sect.files">
+    <title>Files</title>
+
+    <variablelist>
+      <varlistentry>
+        <term><filename>.rsync-filter</filename></term>
+
+        <listitem>
+          <para>If the backup option <option role="copyback">-F</option> or
+          <option role="copyback">--rsync-filter</option> is given,
+          <command>rsync</command> will look for a file with this name in each
+          directory and read include/exclude filters from it if it is
+          found.</para>
+
+          <para>Requires a version of <command>rsync</command> that supports
+          the option <option role="rsync">-F</option>.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><filename>.copyback-exclude</filename></term>
+
+        <listitem>
+          <para>If the source is a directory and this directory contains a
+          file by this name, then <command>rsync</command> exclude patterns
+          are read from it.</para>
+
+          <para>This is equivalent to using <option
+          role="copyback">--exclude-from</option>=<filename><replaceable>SOURCE</replaceable>/.copyback-exclude</filename>
+          (where <replaceable>SOURCE</replaceable> is the source
+          directory).</para>
+
+          <para>See the <command>rsync</command> manual for information about
+          include and exclude patterns.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section id="sect.environment" xreflabel="Environment">
+    <title>Environment</title>
+
+    <para><command>copyback</command> can use either of two environment
+    variables for setting the <glossterm
+    linkend="glossentry.backup-root-directory">backup root
+    directory</glossterm>.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term><envar>COPYBACK_ROOT</envar></term>
+
+        <listitem>
+          <para>If none of the options <option>--root</option> or
+          <option>--root-global</option> are used and
+          <envar>COPYBACK_ROOT</envar> is set, the effect is the same as using
+          <option>--root</option> with the value of
+          <envar>COPYBACK_ROOT</envar>.</para>
+
+          <para><envar>COPYBACK_ROOT</envar> overrides
+          <envar>COPYBACK_ROOT_GLOBAL</envar>.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><envar>COPYBACK_ROOT_GLOBAL</envar></term>
+
+        <listitem>
+          <para>If none of the options <option>--root</option> or
+          <option>--root-global</option> are used and
+          <envar>COPYBACK_ROOT</envar> is not set, and
+          <envar>COPYBACK_ROOT_GLOBAL</envar> is set, the effect is the same
+          as using <option>--root-global</option> with the value of
+          <envar>COPYBACK_ROOT_GLOBAL</envar>.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section id="sect.author">
+    <title>Author</title>
+
+    <para>Written by Emil Karlén.</para>
+  </section>
+
+  <section>
+    <title>Bugs</title>
+
+    <para>The behaviour is undefined for backups of files who's filename
+    contains non-printable characters or newlines.</para>
+  </section>
+
+  <section id="sect.reporting-bugs">
+    <title>Reporting bugs</title>
+
+    <para>Report bugs to &lt;<ulink
+    url="mailto:emilkarlen@aim.com">emilkarlen@aim.com</ulink>&gt;.</para>
+  </section>
+
+  <section id="sect.copyright">
+    <title>Copyright</title>
+
+    <para>Copyright © 2019 Emil Karlén.</para>
+
+    <para>This is free software. You may redistribute copies of it under the
+    terms of the GNU General Public License &lt;<ulink
+    url="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</ulink>&gt;.
+    There is NO WARRANTY, to the extent permitted by law.</para>
+  </section>
+
+  <glossary>
+    <glossdiv>
+      <title>Definition and explanation of terms</title>
+
+      <glossentry id="glossentry.global-backup-root-directory"
+                  xreflabel="global backup root directory">
+        <glossterm>global backup root directory</glossterm>
+
+        <glossdef>
+          <para>Set by the environment variable
+          <envar>COPYBACK_ROOT_GLOBAL</envar> or the command line option
+          <option>--root-global</option>. The command line option overrides
+          the environment variable.</para>
+
+          <glossseealso otherterm="glossentry.global-root-suffix">&lt;global
+          root suffix&gt;</glossseealso>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.global-root-suffix"
+                  xreflabel="global root suffix">
+        <glossterm>global root suffix</glossterm>
+
+        <glossdef>
+          <para>Used when the <glossterm
+          linkend="glossentry.backup-root-directory">backup root
+          directory</glossterm> is derived from a <glossterm
+          linkend="glossentry.global-backup-root-directory">global backup root
+          directory</glossterm>.</para>
+
+          <para>The global root suffix is appended to the <glossterm
+          linkend="glossentry.global-backup-root-directory">global backup root
+          directory</glossterm> to form the <glossterm
+          linkend="glossentry.backup-root-directory">backup root
+          directory</glossterm>.</para>
+
+          <para>By default, the <glossterm>global root suffix</glossterm> is
+          <literal>users/<replaceable>USER</replaceable></literal>, where
+          <replaceable>USER</replaceable> is the name of the (effective)
+          operating system user.</para>
+
+          <para>The option <option>--root-global-suffix</option> can be used
+          to set the suffix to any string.</para>
+
+          <para>Slashes ('/') in the value creates subdirectories - the are
+          treated as slashes in normal filenames.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.backup-root-directory"
+                  xreflabel="backup root directory">
+        <glossterm>backup root directory</glossterm>
+
+        <glossdef>
+          <para>The root directory for storing a users backups. Each project
+          got it's own <glossterm
+          linkend="glossentry.project-directory">project directory</glossterm>
+          which is a subdirectory of the <glossterm>backup root
+          directory</glossterm>.</para>
+
+          <para>Set by the environment variable <envar>COPYBACK_ROOT</envar>
+          or the command line option <option>--root</option>. The command line
+          option overrides the environment variable.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.project-directory"
+                  xreflabel="project directory">
+        <glossterm>project directory</glossterm>
+
+        <glossdef>
+          <para>The directory where <command>copyback</command> stores the
+          backups of the project.</para>
+
+          <para>This is a subdirectory of the <glossterm
+          linkend="glossentry.backup-root-directory">backup root
+          directory</glossterm>. It is constructed by appending the <glossterm
+          linkend="glossentry.project-name">project name</glossterm> to
+          <glossterm linkend="glossentry.backup-root-directory">backup root
+          directory</glossterm>.</para>
+
+          <glossseealso
+          otherterm="glossentry.backup-root-directory">&lt;backup root
+          directory&gt;</glossseealso>
+
+          <glossseealso
+          otherterm="glossentry.project-name">&lt;project-name&gt;</glossseealso>
+
+          <glossseealso
+          otherterm="glossentry.source">&lt;source&gt;</glossseealso>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.backup-file">
+        <glossterm>backup file</glossterm>
+
+        <glossdef>
+          <para>A file or directory that represents a backup for a <glossterm
+          linkend="glossentry.project">project</glossterm>.</para>
+
+          <para>The basename of backup files match the following extended
+          regular expression:
+          <literal>copyback-([[:digit:]]{8}-[[:digit:]]{4,6}))(-[^/.*"]+)?($|\..+)</literal></para>
+
+          <para>The contents of the file is the contents of the <glossterm
+          linkend="glossentry.source">source</glossterm>. If the source is a
+          file or directory the mode, modification time, user and group of the
+          backup file matches that of the source.</para>
+
+          <para>An exception to the above are "postprocessed" backup files.
+          "Postprocessing" a backup means storing it in a
+          <command>tar</command> archive or <command>gzip</command>'ing it.
+          The extension tells if, and how, the backup is
+          "postprocessed":</para>
+
+          <variablelist>
+            <varlistentry>
+              <term>.tar</term>
+
+              <listitem>
+                <para>The backup is a backup of a directory, which is
+                represented by a <command>tar</command> archive.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>.tar.gz</term>
+
+              <listitem>
+                <para>The backup is a backup of a directory, which is
+                represented by a <command>gzip</command>'ed
+                <command>tar</command> archive.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>.gz</term>
+
+              <listitem>
+                <para>The backup is a backup of a file or program output,
+                which is <command>gzip</command>'ed.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>.gzs</term>
+
+              <listitem>
+                <para>The backup is a backup of a directory. Each file in the
+                directory is <command>gzip</command>'ed.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+
+          <para>The backup files of "program output" projects can also be
+          assigned a custom extension using
+          <option>--extension</option>=<replaceable>EXTENSION</replaceable>.</para>
+
+          <para>All backup files for a <glossterm
+          linkend="glossentry.project">project</glossterm> are re stored in
+          the <glossterm baseform=""
+          linkend="glossentry.project-directory">project
+          directory</glossterm>.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.project-name" xreflabel="project name">
+        <glossterm>project name</glossterm>
+
+        <glossdef>
+          <para>The project names is appended to the <glossterm
+          linkend="glossentry.backup-root-directory">backup root
+          directory</glossterm>, separated by a slash, to form the <glossterm
+          baseform="" linkend="glossentry.project-directory">project
+          directory</glossterm>.</para>
+
+          <para>Project must be given unique names so that their backups are
+          stored in unique <glossterm baseform=""
+          linkend="glossentry.project-directory">project
+          directories</glossterm>. <command>copyback</command> assumes that
+          all backups in a <glossterm baseform=""
+          linkend="glossentry.project-directory">project directory</glossterm>
+          are backups of the same source.</para>
+
+          <para>The project name consists of the <glossterm
+          linkend="glossentry.project-name-head">project name head</glossterm>
+          and <glossterm linkend="glossentry.project-name-tail">project name
+          tail</glossterm> separated by a slash.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.project-name-head"
+                  xreflabel="project name head">
+        <glossterm>project name head</glossterm>
+
+        <glossdef>
+          <para>The first part of the <glossterm
+          linkend="glossentry.project-name">project name</glossterm> (the
+          second is the <glossterm
+          linkend="glossentry.project-name-tail">project name
+          tail</glossterm>).</para>
+
+          <para>Set by
+          <option>--project-name-head</option>=<replaceable>STRING</replaceable>
+          or <option>--pnh</option>=<replaceable>STRING</replaceable>.
+          <replaceable>STRING</replaceable> can be left out to skip the tail.
+          Then the <glossterm linkend="glossentry.project-name">project
+          name</glossterm> will be equal to the <glossterm
+          linkend="glossentry.project-name-tail">project name
+          tail</glossterm>.</para>
+
+          <para>If the above options are not given, a default value will be
+          used. This value depends on the naming scheme and the absolute name
+          of the source file. See "<xref
+          linkend="sect.descr.naming-schemes"/>" for details.</para>
+
+          <para>If you only backup files and directories under you home
+          directory, the project name head can savely be skiped.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.project-name-tail"
+                  xreflabel="project name tail">
+        <glossterm>project name tail</glossterm>
+
+        <glossdef>
+          <para>The second part of the <glossterm
+          linkend="glossentry.project-name">project name</glossterm> (the
+          first is the <glossterm
+          linkend="glossentry.project-name-tail">project name
+          tail</glossterm>).</para>
+
+          <para>See "<xref linkend="sect.descr.naming-schemes"/>" for
+          details.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.project-source" xreflabel="project source">
+        <glossterm>project source</glossterm>
+
+        <glossdef>
+          <para>The item that <command>copyback</command> is told to make a
+          backup of. Each source is one of the following:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>a file,</para>
+            </listitem>
+
+            <listitem>
+              <para>a directory,</para>
+            </listitem>
+
+            <listitem>
+              <para>the program output (on stdout) from a program.</para>
+            </listitem>
+          </itemizedlist>
+
+          <para>Each backup is a file or directory that contains a copy of the
+          source.</para>
+
+          <para>The type of source is specified using <option>--file</option>,
+          <option>--directory</option> or <option>--program</option>. If the
+          source is a file or directory, <command>copyback</command> can
+          determine this automatically.</para>
+
+          <para>If the type of source is program output, and the SOURCE is
+          '-', the data to backup is read from stdin.</para>
+
+          <para>The source is the <replaceable>SOURCE</replaceable> in the
+          command line syntax. It can be given as an argument or using the
+          option
+          <option>--source</option>=<replaceable>SOURCE</replaceable>.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.source-type" xreflabel="source type">
+        <glossterm>source type</glossterm>
+
+        <glossdef>
+          <para>The type item that <command>copyback</command> is told to make
+          a backup of. One of</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>a file,</para>
+            </listitem>
+
+            <listitem>
+              <para>a directory,</para>
+            </listitem>
+
+            <listitem>
+              <para>the program output (on stdout) from a program.</para>
+            </listitem>
+          </itemizedlist>
+
+          <para>The type of source is specified using <option>--file</option>,
+          <option>--directory</option> or <option>--program</option>. If the
+          source is a file or directory, <command>copyback</command> can
+          determine this automatically.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.project" xreflabel="project">
+        <glossterm>project</glossterm>
+
+        <glossdef>
+          <para><command>copyback</command> considers each source it is told
+          to backup a project.</para>
+
+          <para>A <glossterm linkend="glossentry.project">project</glossterm>
+          consists of three things:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>a <glossterm linkend="glossentry.project-source">project
+              source</glossterm></para>
+            </listitem>
+
+            <listitem>
+              <para>a <glossterm
+              linkend="glossentry.project-directory">project
+              directory</glossterm></para>
+            </listitem>
+
+            <listitem>
+              <para>a <glossterm linkend="glossentry.project-name">project
+              name</glossterm></para>
+            </listitem>
+          </itemizedlist>
+
+          <para>See "<xref linkend="sect.description.organization-projects"/>"
+          for details.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.source" xreflabel="source">
+        <glossterm>source</glossterm>
+
+        <glossdef>
+          <para>The same as the <glossterm
+          linkend="glossentry.project-source">project
+          source</glossterm>.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.project-naming-scheme"
+                  xreflabel="project naming scheme">
+        <glossterm>project naming scheme</glossterm>
+
+        <glossdef>
+          <para>The way the <glossterm
+          linkend="glossentry.project-name">project name</glossterm> is
+          derived.</para>
+
+          <para>See "<xref linkend="sect.descr.naming-schemes"/>" for
+          details.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry id="glossentry.command" xreflabel="command">
+        <glossterm>command</glossterm>
+
+        <glossdef>
+          <para>Each invocation of <command>copyback</command> runs a
+          command.</para>
+
+          <para>The command line syntax is individual for each command, and
+          each accepts its own options.</para>
+
+          <para>The general syntax for running the command
+          <replaceable>COMMAND</replaceable> is</para>
+
+          <cmdsynopsis>
+            <command>copyback</command>
+
+            <arg choice="opt">GENERAL-OPTIONS</arg>
+
+            <arg choice="plain"><replaceable>COMMAND</replaceable></arg>
+
+            <arg choice="opt">BACKUP-OPTIONS</arg>
+
+            <arg choice="opt">COMMAND-ARGUMENTS</arg>
+          </cmdsynopsis>
+
+          <para>Many commands have a shorter "alias".</para>
+
+          <para><literal>backup</literal> is the default command. The command
+          name <literal>backup</literal> can be left out as long as the
+          following argument doesn't clash with a command name (or
+          alias).</para>
+
+          <para>See "<xref linkend="sect.cmd"/>" for a description of each
+          command.</para>
+        </glossdef>
+      </glossentry>
+    </glossdiv>
+  </glossary>
+</article>

@@ -1,0 +1,33 @@
+# Tests creating a new backup and locking it.
+# The project is "tared" and "gzipped" directory project.
+#
+# Checks that
+#   * two files file are created,
+#   * a lock file is created
+#   * the backup has got the right name.
+#
+# Uses m4.
+#
+
+m4_include(common.m4) # m4
+
+application:copyback
+name:create-new-backup/lock-backup-tar-gz
+home:..
+
+M4_CheckNewBackupName_env_set # m4
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . backup --project-name-head --directory -LTz -c a_name ${SIMPTEST_HOME}/data/dir
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+check.exitcode:0
+
+# Check that exactly two files are created.
+check.run.cmdline:test $(ls a_name | wc -l) == '2'
+
+# Check that the backup name is correct (as described in the Test Plan).
+M4_CheckNewBackupName_check(`-r __SIMPTEST_TESTROOT__/a_name -E tar.gz')  # m4
+
+# Check that the backup is locked
+check.run.cmdline/prepend-home:M4_COMMON_BIN/backup-is-locked $(cat ${SIMPTEST_STDOUT})

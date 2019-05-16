@@ -1,0 +1,6 @@
+#! @BASH@
+
+readonly VERSION='@PACKAGE_STRING@'
+readonly AWK=@AWK@
+readonly SED=@SED@
+readonly emailMAINTAINER='@PACKAGE_BUGREPORT@'

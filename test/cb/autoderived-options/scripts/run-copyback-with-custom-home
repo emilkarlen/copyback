@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Runs ${1}/copyback with a custom HOME.
+# HOME is set to SIMPTEST_TESTROOT.
+#
+# The directory containing the copyback executable must be given as
+# argument #1.  The rest of the arguments are passed to copyback.
+
+#
+# This code must be a standalone program since it uses the value SIMPTEST_TESTROOT.
+# This variable is not known while parsing the testcase file, so it cannot be
+# set using env.set:...
+# If simptest could postpone the env.set until SIMPTEST_TESTROOT was knows, this
+# file would not be needed.
+
+export HOME=${SIMPTEST_TESTROOT}
+bindir=$1
+shift
+${bindir}/copyback "$@"

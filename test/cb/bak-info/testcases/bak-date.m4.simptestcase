@@ -1,0 +1,16 @@
+# Runs the test-command 'bak-info-select', which tests bakInfo_select.
+#
+# Tests getting the bak-info for a given date, which exists.
+# The set to look in is the "backup-only set".
+
+m4_include(common.m4)
+
+application:copyback
+name:bak-info/bak-date
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -c bak-info-select bak date/20070510-1435 - ${SIMPTEST_HOME}/M4_COMMON_DATA/bak-info
+
+check.exitcode:0
+
+check.stdout.file.eq:output/bak-date.txt

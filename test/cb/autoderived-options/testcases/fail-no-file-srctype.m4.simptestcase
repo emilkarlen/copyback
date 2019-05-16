@@ -1,0 +1,20 @@
+# Tests deriving missing options automatically.
+#
+# Fails, because the source type cannot be derived.
+# The named source is not an existing file.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/cleaning
+name:autoderive-options/fail-no-file-srctype
+home:..
+
+setup.run.cmdline:mkdir BAK-ROOT
+setup.run.cmdline:mkdir SOURCES
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root BAK-ROOT --backup --debug -- -c print-derived-options SOURCES/NO-FILE
+
+check.exitcode:M4_EXIT_USAGE

@@ -1,0 +1,17 @@
+# Tests the check for existing project root directory.
+# 
+# Ok, because it does exist.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/env-and-cla/prj-dir/program/existance-ok
+home:..
+
+# Create the project root directory.
+setup.run.cmdline:mkdir --parents bak-root/other/a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --program -c a_name --root bak-root --debug -- -c test-dest-deriv -e env-and-cla/prj-dir/program ls
+
+check.exitcode:0

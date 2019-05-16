@@ -1,0 +1,34 @@
+# Tests creating a new backup. The project is a program output project.
+# The backup is tagged and gzip compressed.
+# Uses m4 preprocessing.
+#
+
+application:copyback
+name:create-new-backup/program/tag/gz
+home:..
+
+m4_include(common.m4)
+
+# Code from m4 file: Set environment variables used later.
+M4_CheckNewBackupName_env_set
+
+setup.run.cmdline:mkdir bak-root
+setup.run.cmdline:touch file.txt
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bak-root --project-name-head backup --program --assign-tag TAG --gzip --constant a_name --extension=EXT ls
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+check.exitcode:0
+
+# Check that exactly one directory is created.
+check.run.cmdline:test $(ls bak-root/a_name | wc -l) == '1'
+
+# Code from m4 file: Check that the backup name is correct (as described in the Test Plan).
+M4_CheckNewBackupName_check(`-r __SIMPTEST_TESTROOT__/bak-root/a_name -g TAG -E EXT.gz')
+
+
+# Check the contents of the backup, first uncompress it.
+# THIS CHECK NOT POSSIBLE: simptestcase cannot do the first line before the one after :(
+#check.run.cmdline:gunzip $(cat ${SIMPTEST_STDOUT})
+#check.compare.eq/file-contents:output/program-output.txt:bak-root/a_name/$(ls bak-root/a_name)

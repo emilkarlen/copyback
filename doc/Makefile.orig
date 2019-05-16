@@ -1,0 +1,31 @@
+.PHONY: gen-dist-doc maintainer-clean
+
+TARGETS  = copyback.1 copyback/html.css copyback/copyback-UsersGuide-en.html
+
+
+gen-dist-doc: copyback $(TARGETS)
+
+%.1: %.refentry.docbook.xml
+	xsltproc http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
+
+# copyback/copyback-UsersGuide-en.html: copyback copyback-UsersGuide-en.docbook.xml
+# 	xmlto xhtml-nochunks copyback-UsersGuide-en.docbook.xml
+# 	mv copyback-UsersGuide-en.docbook.html copyback/copyback-UsersGuide-en.html
+
+copyback/html.css: copyback html.css
+	cp html.css copyback
+
+maintainer-clean:
+	rm -f $(TARGETS)
+	rm -rf copyback
+
+copyback:
+	mkdir copyback
+
+
+copyback/copyback-UsersGuide-en.html: copyback copyback-UsersGuide-en.docbook.xml
+	xsltproc --output copyback/copyback-UsersGuide-en.html customization-html.xsl copyback-UsersGuide-en.docbook.xml
+
+%.pdf: %.docbook.xml
+	xmlto --skip-validation -m db2fo-parameters.xsl pdf $<
+	mv $*.docbook.pdf $@

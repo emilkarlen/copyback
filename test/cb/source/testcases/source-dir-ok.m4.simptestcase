@@ -1,0 +1,15 @@
+# Tests the setting of SRC to a directory, when the source is a correct directory.
+
+m4_include(common.m4)
+
+application:copyback
+name:source-dir-ok
+home:..
+
+setup.run.cmdline:mkdir bakroot
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bakroot --project-name-head --directory -b --debug -- -c print-source ${SIMPTEST_HOME}/data/directory-project
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+check.exitcode:0
+check.stdout.file.eq/replaced:output/source-dir-ok.stdout.txt

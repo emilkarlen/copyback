@@ -1,0 +1,24 @@
+# Tests genTargetNameAndLockIt in case of a lock-file without backup for
+# the given minute. using the test-command 'gen-target-name'.
+#  A predefined datetime, given by -d, is used.
+#
+# Checks that the backup and lock file names are correct and that the
+# lock file exists.
+
+m4_include(common.m4)
+
+application:copyback
+name:gentarget-lockOnly
+home:..
+
+# Install testdata
+setup.install:data/sec
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -d 20070620_10\\:20\\:30 -c gen-target-name sec
+
+check.exitcode:0
+
+check.stdout.file.eq:output/gentarget-lockOnly-20070620_102030.txt
+
+# Check using 'check-output-from-gen-target-name'.
+check.run.cmdline/prepend-home:scripts/check-output-from-gen-target-name < ${SIMPTEST_STDOUT}

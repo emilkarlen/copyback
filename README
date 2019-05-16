@@ -1,0 +1,23 @@
+Simple backup util - stores backups as copies, using rsync
+
+Tries to be ok att managing backups using the directory layout of
+the source file/dir.
+
+
+Be careful!
+
+
+copyback is a shell script, that relies heavily on the
+ - OS environment
+ - command line utilities
+ - syntax of file names
+
+copyback is tested by a program (simptest), which is also written
+in shell script.
+
+Neither copyback itself or the tests are portable!
+
+Tested on Ubuntu Linux. Bash v4.3.
+
+
+copyback was developed while learning shell script (around 2007).

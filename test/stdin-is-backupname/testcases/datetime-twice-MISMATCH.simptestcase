@@ -1,0 +1,14 @@
+# Tests the tool `stdin-is-backupname'.
+#
+# The file contains a backupname without the right backup name twice,
+# Because of this, the result is a MISMATCH.
+#
+
+application:copyback/common/scripts/stdin-is-backupname
+name:backupname-MATCH-1
+home:..
+
+test.stdin:input/twice-backupname-20010203+0405.txt
+test.run.cmdline/prepend-home:../common/scripts/stdin-is-backupname 2001-02-03_04\\:05
+
+check.exitcode:1

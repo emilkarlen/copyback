@@ -1,0 +1,15 @@
+# Tests the tool `stdin-is-backupname'.
+#
+# The file contains a backupname with all possible parts.
+# Many datetimes, of which one is in the file, is given. Because of this,
+# the result is a MATCH.
+#
+
+application:copyback/common/scripts/stdin-is-backupname
+name:all_parts-MATCH-2
+home:..
+
+test.stdin:input/all_parts-20010203-0405.txt
+test.run.cmdline/prepend-home:../common/scripts/stdin-is-backupname 2001-01-01_00\\:00 2001-02-03_04\\:05 -r /a/b/c -g TAG -E ext1.ext2.ext3
+
+check.exitcode:0

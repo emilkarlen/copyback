@@ -1,0 +1,15 @@
+# Runs the test-command 'bak-info-select', which tests bakInfo_select.
+#
+# Tests getting the last of all bak-infos.
+
+m4_include(common.m4)
+
+application:copyback
+name:bak-info/all-last
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -c bak-info-select all last - ${SIMPTEST_HOME}/M4_COMMON_DATA/bak-info
+
+check.exitcode:0
+
+check.stdout.file.eq:output/all-last.txt

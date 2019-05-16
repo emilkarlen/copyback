@@ -1,0 +1,22 @@
+# Tests unlock --last for a project where the last backup is locked.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-unlocking
+name:unlock-last-last_locked-implicit
+home:..
+
+setup.install:data/last-locked
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --directory -b --prfn unlock --last last-locked
+
+check.exitcode:0
+
+# Check that the name of the last backup is printed.
+check.stdout.file.eq:output/lock-last-last_locked.txt
+
+# Check for the right number of files.
+check.run.cmdline:test $(ls last-locked | wc -l) == '8'

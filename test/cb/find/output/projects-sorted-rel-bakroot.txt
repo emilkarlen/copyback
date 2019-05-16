@@ -1,0 +1,5 @@
+.
+.hidden-file
+subdir
+subdir/doc
+subdir/file.txt

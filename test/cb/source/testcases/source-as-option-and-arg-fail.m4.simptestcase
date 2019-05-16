@@ -1,0 +1,14 @@
+# Tests detecting failure when the source is given both as an option and as an argument.
+
+m4_include(common.m4)
+
+application:copyback
+name:source-as-option-and-arg-fail
+home:..
+
+setup.run.cmdline:mkdir bakroot
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bakroot --project-name-head --file -b --source ${SIMPTEST_HOME}/data/file-project --debug -- -c print-source ${SIMPTEST_HOME}/data/file-project
+
+check.exitcode:M4_EXIT_USAGE
+check.stdout.empty

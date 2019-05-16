@@ -1,0 +1,18 @@
+# Runs the tag command.
+#
+# The new tag is invalid.
+# Setting a new tag to a backup given explicitly.
+
+m4_include(common.m4)
+
+application:copyback
+name:tag/explicit/invalid
+home:..
+
+setup.install:M4_COMMON_DATA/bak-info:a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --print-filename tag --explicit a_name/copyback-20070510-153040-_a_tag_.gz a.b
+
+check.exitcode:M4_EXIT_ERROR
+
+check.stdout.empty

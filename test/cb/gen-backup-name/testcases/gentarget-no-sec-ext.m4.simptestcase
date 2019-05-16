@@ -1,0 +1,23 @@
+# Tests genTargetNameAndLockIt in case of a "non-second" backup
+# with extension using the test-command 'gen-target-name'.
+#  A predefined datetime, given by -d, is used.
+#
+# Checks that the backup and lock file names are correct and that the
+# lock file exists.
+
+m4_include(common.m4)
+
+application:copyback
+name:gentarget-no-sec-ext
+home:..
+
+# Install testdata
+setup.install:data/no-sec-ext
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -d 20070612_10\\:30\\:20 -c gen-target-name no-sec-ext
+
+check.exitcode:0
+
+check.stdout.file.eq:output/gentarget-no-sec-ext-20070612_1030.txt
+
+check.run.cmdline/prepend-home:scripts/check-output-from-gen-target-name < ${SIMPTEST_STDOUT}

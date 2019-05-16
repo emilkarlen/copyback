@@ -1,0 +1,19 @@
+# Test deriving the Backup destination "prj-file".
+#
+# The command 'lock' is run (but stopped after deriving our info).
+# The argument is a backup filename given together with --explicit.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:bak-dest/bak-file/nonrel-lock
+home:..
+
+setup.install:data/a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --debug -- -c dest-deriv-prj-file -- lock --explicit a_name/copyback-20070510-143502
+
+check.exitcode:0
+
+check.stdout.file.eq:output/nonrel-file.txt

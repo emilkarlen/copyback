@@ -1,0 +1,11 @@
+# Initialize the development environment
+
+    > aclocal
+    > autoconf
+    > mkdir auxiliaryre
+    > automake -a
+
+# Build in an initialized development environment
+
+    > ./configure
+    > make

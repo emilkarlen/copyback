@@ -1,0 +1,13 @@
+# Test print-backup-file with a non-existing backup,
+# but with an existing lock file.
+
+m4_include(common.m4)
+
+application:copyback
+name:print-backup-file/non-existing-backup-only-lockfile
+home:..
+
+M4_SETUP_TESTDATA
+M4_TEST_RUN_PBF_WITH(`--date 20070610-1520')
+check.exitcode:M4_EXIT_ERROR
+check.stdout.empty

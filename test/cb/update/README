@@ -1,0 +1,13 @@
+Directories and files for hosting Simptest test subpackages
+that deal with updating an existing backup.
+
+FILES
+----------------------------------------
+* Makefile
+    Executes the tests for each package.
+    The target "check" executes all tests.
+* README
+
+DIRECTORIES
+----------------------------------------
+Each subdirectory represents a Simptest test subpackage.

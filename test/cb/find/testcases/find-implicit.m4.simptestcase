@@ -1,0 +1,19 @@
+# Tests listing projects.
+# The directory is given implicitly.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/list
+name:list-projects
+home:..
+
+setup.install:data/bak-root
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bak-root --project-name-head --basename find bak-root/subdir | sort
+
+check.exitcode:0
+
+check.stdout.file.eq:output/implicit-sorted.txt

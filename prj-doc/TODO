@@ -1,0 +1,190 @@
+-*- org -*-
+
+* TODO <2015-01-14 ons> Change default prj-name-head for program-output (very bad today)
+
+According to the Users Guide: "By default, the project name head is set to other."
+
+A more natural name is "program-output" - it's just a more easy to understand
+default.
+
+* TODO <2010-12-18 lör> Remove 'NOT IMPLEMENTED' for implemented stuff
+* TODO <2010-12-18 lör> print-backup-file
+
+** TODO Document in manual
+
+* TODO <2010-12-18 lör> print-file-inside-backup
+
+** Test
+
+Tests.
+Document in manual.
+
+*** TODO Lokalisering av säk (--last, --tag, --date, ...)
+*** TODO Felhantering och felkoder
+
+** TODO Ta bort användningen av realpath
+
+Nu är det bara print-file-inside-backup som använder den.
+
+Borde gå att ersätta med bash's 'pwd -P'.
+
+Har gjort det.  Ska nog inte använda "realpath", tror det skulle hantera
+symboliska länkar fel, TROR JAG.  Skulle behöva en del i manualen som beskrev
+och motiverade den hanteringen, blir inge vidare om jag ska sitta och klura ut
+hur det borde vara varje gång jag stöter på något länk-relaterat.  Det är för
+klurigt för att förlita sej på 5-minutersintutionen.
+
+* TODO <2010-12-12 sön> Skydd för "mellanliggande" kataloger
+
+Om en säk skapas för a/b/c/minfil.txt,
+och copyback måste skapa katalogerna a,b,c i backup-strukturen,
+ska de ges samma rättigheter som de motsvarande katarna som lagrar källfilen.
+
+* TODO <2010-12-12 sön> Låsfilers skydd
+
+** Växlar
+
+*** En växel
+
+--lock
+
+eller
+
+--lock-writeprotectd
+
+*** Två växlar
+
+Obligatorisk: --lock
+Valfri: --writeprotected
+
+* TODO <2010-12-12 sön> remove-project
+
+** DONE Testa med borttagning av kataloger.
+
+** TODO Dokumentera i users guide och även i programmets hjälp
+
+* TODO remove-backup
+
+Funkar lite liknande remove-project.
+
+* TODO <2010-12-12 sön> låt clean använda samma raderingsfunk som remove-project
+
+... och senare remove-backup.
+
+* TODO Byt namn på begrepp (root)
+
+backups-root-{system,user}
+
+** programmet
+
+** testerna
+
+** manualen
+
+* messages
+
+  - Says for example
+    "copyback: Neither a file nor a command name: ~/Documents"
+    when --source is invalid.  --source cannot specify a command, so the
+    message should say "not a file: ...".
+  - Inform the user when no backup is created (mainely using -u or -U):
+    "copyback: No backup updated or created."
+
+* Autotoolset
+
+  - Put html documentation in @htmldir@.
+
+
+* TODO UsersGuide (några viktiga saker!)
+
+** Bugg om låsfiler?
+
+I manualen vid "A lock is represented as a file in the same directory",
+står det att låsfiler har samma namn som backupfiler förutom extensionen.
+Stämmer det? Har för mej att låsfilerna bara har samma namn fram till datumet.
+Resten kan vara olika (t ex taggen) för att slippa uppdatera låsfilen bara för
+att taggen ändras.
+
+* documentation
+
+  - GPL copyright manual
+  - Better --help (especiall for each command).
+  - Convert the DocBook to TexInfo (find a tool that converts XML
+    to TexInfo).
+  - Use ScrollKeeper.
+  - A man page.
+
+
+* packaging
+
+  - RPM: Create a copyback.spec.in.
+
+
+* TODO New command: "print-backup-file"
+
+  Print the absolute filename of a backup.  Which backup to print should be
+  determined by the common options for this, i.e. --last, --tag, ...
+
+För att lätt kunna arbeta med de säkerhetskopierade filerna (återställa,
+jämföra, osv).
+
+
+* New command: "diff"
+
+   Runs `diff' (using -r for directories, of course) on a backup and the
+  source.
+
+
+* New command "restore" command
+
+  - program-output projects cannot be restored.
+  - restoring a file/directory is like running `rsync' with the SRC and
+    DST arguments switched.
+  - Is it possible to make a "revert" command, for reverting existing files
+    (like the svn revert command)?
+
+
+* New command "remove" (maybe no short alias) (remove an existing backup)
+
+
+* TODO New command "remove-project" (no short alias) (Removing a project)
+
+
+ Should remove all backups (--force must be used to remove locked backups,
+write-protected locked backups causes remove-project to fail).
+ Should also remove the project directory, and all empty parent directories
+up to (but not including) the backup root directory.
+
+** Borde kanske: implementera kontroll av argumenten i doRemoveProject
+
+Det ska nog inte behövas om programmet är buggfritt.  Men med tanke på att
+funktionalliteten handlar om att ta bort saker borde man nog skydda sej mot
+buggar.  Alltså, kolla det som nämns i specifikationen av funktionen.
+
+** Implementera testfall
+
+I tests/cb/remove-project har en simpest struktur satts upp.
+
+** Implementera doRemoveProject
+
+Inget i den är testat, eller väldigt lite.
+Men ska inte behöva testa något annat än den funktionen.  All annan använd kod
+täcks av befintliga testfall.
+
+* Implementation: Handle signals (Ctrl-C)
+
+* New feature: bzip2 compression
+
+
+  - A --bzip2 option.
+  - A --lzvm (eller vad den nu heter, se tar)
+
+* New feature: Keep backups on a different machine.
+
+ The "backup root directory" would be a hostname+directory in
+rsync format.
+
+
+* New program: GUI (GTK+ or Qt)
+
+ The program "copyback-gui".

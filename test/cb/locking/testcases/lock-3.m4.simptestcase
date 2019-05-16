@@ -1,0 +1,21 @@
+# Tests to lock an existing backup.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-locking
+name:lock-3
+home:..
+
+setup.install:data/lock-3/a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --prfn lock --explicit a_name/copyback-20070614-1622
+
+check.exitcode:0
+
+# Check that the backup printed is locked.
+M4_CHECK_BACKUP_IS_LOCKED_STDOUT
+
+M4_CHECK_ONE_LOCKED_BACKUP(`a_name',`a_name/copyback-20070614-1622')

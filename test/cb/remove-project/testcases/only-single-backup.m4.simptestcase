@@ -1,0 +1,21 @@
+# -*- m4 -*-
+# Tests removing a project that contains only one backup.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/remove-project
+name:only-single-backup
+home:..
+
+M4_SETUP_SRC_AND_BACKUP
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback remove-project --explicit --force $(M4_printPrjDir)
+
+check.exitcode:0
+
+# Check that the parent directory of the PD exists and is empty.
+check.run.cmdline:test -d $(dirname $(M4_printPrjDir))
+check.run.cmdline:test $(ls $(dirname $(M4_printPrjDir)) | wc -l) = 0

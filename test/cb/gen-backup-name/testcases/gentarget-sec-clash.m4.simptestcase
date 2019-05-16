@@ -1,0 +1,23 @@
+# Tests genTargetNameAndLockIt in case of the backup datetime
+# is already used.
+#
+# Checks that the program exits with EXIT_ERROR and that nothing is printed
+# to stdout.
+
+m4_include(common.m4)
+
+application:copyback
+name:gentarget-sec
+home:..
+
+# Install testdata
+setup.install:data/sec
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -d 20070612_10\\:30\\:15 -c gen-target-name sec
+
+check.exitcode:M4_EXIT_ERROR
+
+check.stdout.empty
+
+# Check using 'check-output-from-gen-target-name'.
+#check.run.cmdline/prepend-home:scripts/check-output-from-gen-target-name < ${SIMPTEST_STDOUT}

@@ -1,0 +1,810 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<refentry lang="en">
+  <refmeta>
+    <refentrytitle>copyback</refentrytitle>
+
+    <manvolnum>1</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>copyback</refname>
+
+    <refpurpose>Simple backup utility. Backups are copies of
+    files.</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <refsect2>
+      <title>Creating and updating backups</title>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="opt">BACKUP-OPTIONS</arg>
+
+        <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>or, equivalently:</para>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="plain">backup</arg>
+
+        <arg choice="opt">BACKUP-OPTIONS</arg>
+
+        <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+      </cmdsynopsis>
+    </refsect2>
+
+    <refsect2>
+      <title>Other commands</title>
+
+      <cmdsynopsis>
+        <command>copyback</command>
+
+        <arg choice="opt">GENERAL-OPTIONS</arg>
+
+        <arg choice="plain"><replaceable>COMMAND</replaceable></arg>
+
+        <arg choice="opt">COMMAND-OPTIONS</arg>
+
+        <arg choice="opt">COMMAND-ARGUMENTS</arg>
+      </cmdsynopsis>
+    </refsect2>
+  </refsynopsisdiv>
+
+  <refsection>
+    <title>COMMANDS</title>
+
+    <refsection id="cmd.backup"
+                xreflabel="backup - Creating or updating a backup">
+      <title><literal>backup</literal> - Creating or updating a backup</title>
+
+      <para>Creates a new backup or updates an exising one.</para>
+
+      <refsection>
+        <title>Synopsis of <literal>backup</literal></title>
+
+        <para>The name of the command - "<literal>backup</literal>" - can be
+        left out if the string <replaceable>SOURCE</replaceable> does not
+        clash with any of the reserved command names
+        ("<literal>backup</literal>", "<literal>clean</literal>",
+        "<literal>list</literal>", "<literal>l</literal>",
+        "<literal>find</literal>", "<literal>lock</literal>",
+        "<literal>unlock</literal>", "<literal>restore</literal>",
+        "<literal>tag</literal>").</para>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="opt">BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">backup</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="opt">BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">backup</arg>
+        </cmdsynopsis>
+      </refsection>
+    </refsection>
+
+    <refsection id="cmd.clean">
+      <title><literal>clean</literal> - Removing old backups</title>
+
+      <para>Removes all but the latest, non-locked, backups for a
+      project.</para>
+
+      <refsection>
+        <title>Synopsis of <literal>clean</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">clean</arg>
+
+          <arg choice="opt">CLEAN-OPTIONS</arg>
+
+          <arg choice="plain"><option>--explicit</option></arg>
+
+          <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">clean</arg>
+
+          <arg choice="opt">CLEAN-OPTIONS</arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">clean</arg>
+
+          <arg choice="opt">CLEAN-OPTIONS</arg>
+        </cmdsynopsis>
+      </refsection>
+
+      <refsection>
+        <title>Description of <literal>clean</literal></title>
+
+        <para>Locked backups can be cleaned using <option>--force</option>. To
+        clean the given project directory and also all subdirectories of it,
+        use <option>--recursive</option>.</para>
+
+        <para>The project directory to clean can be given either explicitly
+        (the first syntax) or implicitly (the last two syntaxes). When giving
+        it implicitly, the same source and naming options used for creating
+        backups should be used. Other backup options are ignored.</para>
+      </refsection>
+
+      <refsection>
+        <title>Options for <literal><literal>clean</literal></literal></title>
+
+        <variablelist>
+          <varlistentry>
+            <term><option>--force</option> | <option>-f</option></term>
+
+            <listitem>
+              <para>Removes locked backups.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>--recursive | -r</term>
+
+            <listitem>
+              <para>Also clean all subdirectories of the given project
+              directory that contain backups.</para>
+
+              <para>Directories that are copyback backups themselves are not
+              cleaned.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </refsection>
+    </refsection>
+
+    <refsection id="cmd.find">
+      <title>find - Finding existing project directories</title>
+
+      <para>Prints the names of directories that store copyback
+      backups.</para>
+
+      <refsection>
+        <title>Synopsis of <literal>find</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">find</arg>
+
+          <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+        </cmdsynopsis>
+      </refsection>
+
+      <refsection>
+        <title>Description of <literal>find</literal></title>
+
+        <para><command>copyback</command> looks in all subdirectories of the
+        given <replaceable>DIRECTORY</replaceable> for directories that
+        contain copyback backups. The names of these are printed.</para>
+      </refsection>
+    </refsection>
+
+    <refsection id="cmd.list">
+      <title>list - Listing existing backups of a project</title>
+
+      <para>List the exsisting backups for a project in creation time
+      order.</para>
+
+      <refsection>
+        <title>Synopsis of <literal>list</literal></title>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <group choice="req">
+            <arg choice="plain">list</arg>
+
+            <arg choice="plain">l</arg>
+          </group>
+
+          <arg choice="plain"><option>--explicit</option></arg>
+
+          <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <group choice="req">
+            <arg choice="plain">list</arg>
+
+            <arg choice="plain">l</arg>
+          </group>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <group choice="req">
+            <arg choice="plain">list</arg>
+
+            <arg choice="plain">l</arg>
+          </group>
+        </cmdsynopsis>
+      </refsection>
+
+      <refsection>
+        <title>Description of <literal>list</literal></title>
+
+        <para>The project directory to list can be given either explicitly
+        (the first syntax) or implicitly (the last two syntaxes). When giving
+        it implicitly, the same source and naming options used for creating
+        backups should be used. Other backup options are ignored.</para>
+      </refsection>
+    </refsection>
+
+    <refsection id="cmd.lock" xreflabel="lock - Locking existing backups">
+      <title>lock - Locking existing backups</title>
+
+      <para>Locks backups so that later <command>copyback</command>
+      invokations <emphasis>can not</emphasis> update them (unless
+      <option>--force</option> is used).</para>
+
+      <refsection>
+        <title>Synopsis of <literal>lock</literal></title>
+
+        <para>Locking a single backup by giving the backup file name:</para>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">lock</arg>
+
+          <arg choice="plain"><replaceable>BACKUP-FILE</replaceable></arg>
+        </cmdsynopsis>
+
+        <para>Locking by giving the project directory, together with options
+        that tell which backups to lock:</para>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-OPTIONS</arg>
+
+          <arg choice="plain">lock</arg>
+
+          <arg choice="req">LOCK-OPTIONS</arg>
+
+          <arg choice="plain"><option>--explicit</option></arg>
+
+          <arg choice="plain"><replaceable>DIRECTORY</replaceable></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg
+          choice="plain"><option>--source</option>=<replaceable>SOURCE</replaceable></arg>
+
+          <arg choice="plain">lock</arg>
+
+          <arg choice="plain"><arg choice="req">LOCK-OPTIONS</arg></arg>
+        </cmdsynopsis>
+
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">GENERAL-AND-BACKUP-OPTIONS</arg>
+
+          <arg choice="plain">lock</arg>
+
+          <arg choice="plain"><arg choice="req">LOCK-OPTIONS</arg></arg>
+
+          <arg choice="plain"><replaceable>SOURCE</replaceable></arg>
+        </cmdsynopsis>
+      </refsection>
+
+      <refsection>
+        <title>Description of <literal>lock</literal></title>
+
+        <para>Locking backups prevents later invokations of
+        <command>copyback</command> to update them (unless forced to, using
+        <option>--force</option>).</para>
+
+        <para>The name of all backup files that are locked are printed,
+        including names of backups that are already locked.</para>
+
+        <para>Nothing is printed to stdout if the project does not contain any
+        backups.</para>
+
+        <para>A lock is represented as a file in the same directory as the
+        backup file. The lock has the same filename as the backup file except
+        for the extension. Lock files have the the extension
+        "<literal>.lock</literal>".</para>
+
+        <para>The contents of a lock file is irrelevant. If there exists a
+        directory with the same name as a lock file would have, the behaviour
+        of <command>copyback</command> is undefined.</para>
+
+        <para>A lock can be removed using the <literal>unlock</literal>
+        command.</para>
+
+        <para>The project directory is given implicitly in the last two
+        syntaxes. When using these, the same source and naming options used
+        for creating backups should be used. Other backup options are
+        ignored.</para>
+      </refsection>
+
+      <refsection>
+        <title>Options for <literal>lock</literal></title>
+
+        <variablelist>
+          <varlistentry>
+            <term><option>--last</option> | <option>-l</option></term>
+
+            <listitem>
+              <para>Lock the last backup of a project.</para>
+
+              <para>The name of the last backup is printed, even if it was
+              already locked.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><option>--all</option> | <option>-a</option></term>
+
+            <listitem>
+              <para>Lock all backups of a project.</para>
+
+              <para>The name of all backups are printed, even backups already
+              locked.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </refsection>
+    </refsection>
+
+    <refsection id="cmd.unlock">
+      <title>unlock - Unlocking existing backups</title>
+
+      <para>Unlocks locked backups so that later <command>copyback</command>
+      invokations <emphasis>can</emphasis> update them.</para>
+
+      <para>The <literal>unlock</literal> command is the reverse of to the
+      <literal>lock</literal> command. It is used in the same way, so see
+      "<xref linkend="cmd.lock" />" for details.</para>
+    </refsection>
+  </refsection>
+
+  <refsection>
+    <title>GENERAL OPTIONS</title>
+
+    <refsection>
+      <title>Options for determining the backup root directory</title>
+
+      <para>Only one of <option>--rd</option>, <option>--ru</option> and
+      <option>--rg</option> can be used.</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>--rd <replaceable>path</replaceable></term>
+
+          <listitem>
+            <para>Sets the backup root directory directly to the specified
+            path. No predefined path is appended to this path. If
+            <option>--rc</option> <replaceable>custom-path</replaceable> is
+            given, <replaceable>custom-path</replaceable> is appended to
+            <replaceable>path</replaceable> to form the backup root
+            directory.</para>
+
+            <para>Cannot be used together with <option>--rg</option> or
+            <option>--ru</option>.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>--ru <replaceable>path</replaceable></term>
+
+          <listitem>
+            <para>Sets the "user backup root directory" to the specified
+            path.</para>
+
+            <para>If <option>--rc</option> is not given, one of the predefined
+            subpaths <literal>/home</literal>, <literal>/other</literal> or
+            <literal>/pgm-output</literal> is appended to this path to form
+            the "backup root directory". <literal>/home</literal> is appended
+            if the project is a file or directory and the project name prefix
+            is the effective user's home directory. <literal>/other</literal>
+            is appended if the project is a file or directory and the project
+            name prefix is not the effective user's home directory.
+            <literal>/pgm-output</literal> is appended if the project is
+            program output.</para>
+
+            <para>If <option>--rc</option>
+            <replaceable>custom-path</replaceable> is given, then
+            <replaceable>custom-path</replaceable> is appended instead.</para>
+
+            <para>Cannot be used together with <option>--rg</option> or
+            <option>--rd</option>.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>--rg <replaceable>path</replaceable></term>
+
+          <listitem>
+            <para>Sets the "global backup root directory" to the specified
+            path.</para>
+
+            <para>If <option>--rc</option> is not given, the predefined
+            subpaths /users/<replaceable>username</replaceable> is appended to
+            <replaceable>path</replaceable> to form the "user backup root
+            directory". To this "user backup root directory", the same paths
+            are appended as if it was set using --ru.</para>
+
+            <para>If <option>--rc</option>
+            <replaceable>custom-path</replaceable> is given, then
+            <replaceable>custom-path</replaceable> is appended instead.</para>
+
+            <para>Cannot be used together with <option>--ru</option> or
+            <option>--rd</option>.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>--rc <replaceable>sub-path</replaceable></term>
+
+          <listitem>
+            <para>Customizes the subpath that is added to either the global
+            backup root or user backup root. Replaces the predefined subpaths
+            that are otherwise appended to these.</para>
+
+            <para>When used together with <option>--ru</option> or the
+            environment variable <envar>COPYBACK_USER</envar>:
+            <replaceable>sub-path</replaceable> is appended to the user backup
+            root directory</para>
+
+            <para>sub-path is added to the "user backup root directory" or
+            "global backup root directory" (depending on which one is given)
+            to form the backup root directory. This replaces the predefined
+            sub-paths.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsection>
+
+    <refsection>
+      <title>Other general options</title>
+
+      <variablelist>
+        <varlistentry>
+          <term><option>--verbose</option> | <option>-v</option></term>
+
+          <listitem>
+            <para>Verbose.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--version</option> | <option>-V</option></term>
+
+          <listitem>
+            <para>Print program version and exit.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--help</option></term>
+
+          <listitem>
+            <para>Print help and exit successfully.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsection>
+  </refsection>
+
+  <refsection>
+    <title>BACKUP OPTIONS</title>
+
+    <refsection>
+      <title>Options that tells copyback how to backup</title>
+
+      <para>If the source is a directory:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term><option>--add</option> | <option>-A</option></term>
+
+          <listitem>
+            <para>Add new files to the latest existing, not locked, backup, or
+            create a new backup if there is no existing one.</para>
+
+            <para>No files of the updated backup are removed.</para>
+
+            <para>The name of the backup is set to the current date and
+            time.</para>
+
+            <para>Locked backups can be forced to be updated using
+            <option>-f</option>. Then, if a locked backup is updated, the
+            resulting backup will also be locked (regardless of wether
+            <option>-L</option> is used or not).</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--tar</option> | <option>-T</option></term>
+
+          <listitem>
+            <para>Store the backup in a <command>tar</command> archive
+            file.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>For any type of source:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term><option>--force</option> | <option>--f</option></term>
+
+          <listitem>
+            <para>Force. Makes <command>copyback</command> operate on locked
+            backups.</para>
+
+            <para>If a locked backup is updated (using <option>--add</option>
+            or <option>--synchronize</option>), the resulting backup will also
+            be locked.</para>
+
+            <para>Updates (using <option>-A</option> or <option>-S</option>)
+            and deletions (using <option>--clean</option>) will update/delete
+            locked backups.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--synchronize</option> | <option>-S</option>
+          XXX</term>
+
+          <listitem>
+            <para>Syncronize the latest existing, not locked, backup with the
+            current contents of the project, or create a new backup if there
+            is no existing one. The name of the backup is set to the current
+            date, time and number.</para>
+
+            <para>Locked backups can be forced to be updated using
+            <option>-f</option>. Then, if a locked backup is updated, the
+            resulting backup will also be locked (regardless of wether
+            <option>-L</option> is used or not).</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--gzip</option> | <option>-Z</option> XXX</term>
+
+          <listitem>
+            <para>Compress all backup files using gzip. If the project is a
+            directory, and this is not stored in a tar archive using -T, all
+            files in the directory will be gzipped!</para>
+
+            <para>WARNING: If the project is a directory and this is not
+            stored in a tar archive using -T so that all files in the
+            directory are gzipped, then this backup cannot be added to (-A) or
+            synchronized (-S)! copyback will not detect this but treat each
+            file inside the directory as a source file!</para>
+
+            <!--möjlig fix: lägg till suffix till namnet på backuper av den här typen, och se till att det detekteras
+av PAT_NON_UPDATABLEe. Då kommer de att ignonreras i steget G1!-->
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--lock</option> | <option>-L</option></term>
+
+          <listitem>
+            <para>Lock the backup so that later invokations of
+            <command>copyback</command> will not update it. (Updating only
+            happens when By "update", we mean adding (-A) or synchronizing
+            (-S). If copyback is told to do an update, it will update latest
+            non-locked existing backup.</para>
+
+            <para>A backup is locked if there exists a corresponding lock
+            file. A lock file is an ordinary file in the same directory as the
+            backup. The name is the name of the backup excluding any
+            extension, and with the new extension ".lock" added.</para>
+
+            <para>Locking a backup also write protects it.</para>
+
+            <para>A locked backup can be unlocked by removing its
+            corresponding lock file.</para>
+
+            <para>The contents of the lock file is irrelevant.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsection>
+
+    <refsection>
+      <title>Options for setting the project name - naming schemes</title>
+
+      <para>When the project source is the output from a program
+      (<option>--program</option>):</para>
+
+      <variablelist>
+        <varlistentry>
+          <term><option>--constant</option>=<replaceable>NAME</replaceable> |
+          <option>-c</option> <replaceable>NAME</replaceable></term>
+
+          <listitem>
+            <para>An constant name (used just as it is, not derived from any
+            other information).</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--extension</option>=<replaceable>EXTENSION</replaceable>
+          | <option>-E</option> <replaceable>EXTENSION</replaceable></term>
+
+          <listitem>
+            <para>An extension, that is appended, together with a separating
+            dot, to the backup file.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>When the project source is a file or directory
+      (<option>--file</option> or <option>--directory</option>):</para>
+
+      <variablelist>
+        <varlistentry>
+          <term><option>--constant</option>=<replaceable>NAME</replaceable> |
+          <option>-c</option> <replaceable>NAME</replaceable></term>
+
+          <listitem>
+            <para>An constant name (used just as it is, not derived from any
+            other information). name can't begin with a "/" or use the
+            relative path components "." or "..".</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--suffix</option>=<replaceable>PREFIX-PATH</replaceable>
+          | <option>-u</option> <replaceable>PREFIX-PATH</replaceable></term>
+
+          <listitem>
+            <para>The project name is the real path of the source file with
+            this prefix removed. <replaceable>PREFIX-PATH</replaceable> must
+            really be a prefix of the absolute source file name.
+            <replaceable>PREFIX-PATH</replaceable> must also be an existing
+            directory. and it is the absolute path of
+            <replaceable>PREFIX-PATH</replaceable> that is used.</para>
+
+            <para>(The "real" path for a file means the path reported by the C
+            function "realpath" - "an absolute pathname that names the same
+            file, whose resolution does not involve '.' , '..' , or symbolic
+            links").</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--absolute</option> | <option>-a</option></term>
+
+          <listitem>
+            <para>The project name is the same as the absolute/real path of
+            source file.</para>
+
+            <para>(The "real" path for a file means the path reported by the C
+            function "realpath" - "an absolute pathname that names the same
+            file, whose resolution does not involve '.' , '..' , or symbolic
+            links").</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--basename</option> | <option>-b</option></term>
+
+          <listitem>
+            <para>The project name is the basename of the real path of the
+            source file (the last directory or file component of the path of
+            the source).</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>--suffix-home</option> | <option>-h</option></term>
+
+          <listitem>
+            <para>Special case of -u. The prefix is automatically set to the
+            home directory of the current (effective) user.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsection>
+  </refsection>
+
+  <refsection>
+    <title>AUTHOR</title>
+
+    <para>Written by Emil Karlén.</para>
+  </refsection>
+
+  <refsection>
+    <title>REPORTING BUGS</title>
+
+    <para>Report bugs to &lt;<ulink
+    url="mailto:emil@member.fsf.org">emil@member.fsf.org</ulink>&gt;.</para>
+  </refsection>
+
+  <refsection>
+    <title>COPYRIGHT</title>
+
+    <para>Copyright © 2007 Emil Karlén.</para>
+
+    <para>This is free software. You may redistribute copies of it under the
+    terms of the GNU General Public License &lt;<ulink
+    url="http://www.gnu.org/licenses/gpl.html">http://www.gnu.org/licenses/gpl.html</ulink>&gt;.
+    There is NO WARRANTY, to the extent permitted by law.</para>
+  </refsection>
+
+  <refsection>
+    <title>SEE ALSO</title>
+
+    <para>There is a "Copyback Users Guide" available as a html document. It
+    may be installed at your system at
+    <filename>/usr/share/doc/copyback/copyback-UsersGuide-en.html</filename>,
+    or in a corresponding directory.</para>
+  </refsection>
+</refentry>

@@ -1,0 +1,18 @@
+# Tests deriving the backup destination.
+#
+# The destination is bak-dir.
+# The destination need not exist.
+#
+# Uses m4 preprocessing.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:bak-dest/abs-arg/bak-dir
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -c test-dest-deriv abs-arg/bak-dir anything
+
+check.exitcode:0
+check.stdout.file.eq:output/anything.txt

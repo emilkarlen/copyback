@@ -1,0 +1,19 @@
+# Tests cleaning recursively.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/clean
+name:recursive-no_force
+home:..
+
+setup.install:data/r/original
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback clean --recursive --explicit original
+
+check.exitcode:0
+
+# Check that the contents is the final contents.
+check.compare.eq:data/r/final/no_f:original

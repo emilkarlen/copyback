@@ -1,0 +1,11 @@
+# Test print-backup-file with the backup specified using --last.
+
+m4_include(common.m4)
+
+application:copyback
+name:print-backup-file/last
+home:..
+
+M4_SETUP_TESTDATA
+M4_TEST_RUN_PBF_WITH(`--last')
+M4_CHECK_SUCCESS_AND_FILE(`output/last.txt')

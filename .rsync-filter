@@ -1,0 +1,12 @@
+- /auxiliary/
+- /aclocal.m4
+- /autom4te.cache
+- /config.log
+- /config.status
+- /configure
+
+# Distributions built using make dist.
+- /*.tar.*
+
+# Standard backup files.
+- *~

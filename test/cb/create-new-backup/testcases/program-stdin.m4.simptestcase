@@ -1,0 +1,31 @@
+# Tests creating a new backup. The project is a program output project.
+#
+# Uses m4 preprocessing.
+#
+
+application:copyback
+name:create-new-backup/program
+home:..
+
+m4_include(common.m4)
+
+# Code from m4 file: Set environment variables used later.
+M4_CheckNewBackupName_env_set
+
+setup.run.cmdline:mkdir bak-root
+setup.run.cmdline:touch file.txt
+
+test.run.cmdline:ls | ${SIMPTEST_HOME}/M4_SRC_BIN/copyback --root bak-root --project-name-head --program --constant a_name --extension=EXT -
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+check.exitcode:0
+
+# Check that exactly one directory is created.
+check.run.cmdline:test $(ls bak-root/a_name | wc -l) == '1'
+
+# Check the contents of the backup
+check.compare.eq/file-contents:output/program-output.txt:$(cat ${SIMPTEST_STDOUT})
+
+# Code from m4 file: Check that the backup name is correct (as described in the Test Plan).
+M4_CheckNewBackupName_check(`-r __SIMPTEST_TESTROOT__/bak-root/a_name -E EXT')

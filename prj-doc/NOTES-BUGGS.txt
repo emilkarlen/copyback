@@ -1,0 +1,13 @@
+copyback bugg?
+
+* bugg .rsyns-filter
+
+när jag säk-koppar en katalog (Brev-mamma) följde inte .rsync-filter med. Däremot fanns den med för säk:en för ~/Documents.
+För att kolla: finns .rsync-filter för ~/Documents med?
+
+*  Fattar inte att . är hemkatalogen:
+
+~$ sb find .
+copyback: The project directory is not an exsisting directory: /copyback/users/karlen/root/home/karlen
+
+Kanske är det meningen att det ska vara så här, men vore det inte bättre om hemkatalogen sparades som <user>/home ? (Eller, går det. "/home" är ju ett godtyckligt "prefix")

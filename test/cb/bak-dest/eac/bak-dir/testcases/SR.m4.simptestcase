@@ -1,0 +1,17 @@
+# Tests setting the backup root directory from environment variables and
+# command line options.
+# 
+# Testar absolut namn med roten given av COPYBACK_ROOT
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/bak-dir/SR
+home:..
+
+env.set:COPYBACK_ROOT:/_ROOT_
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -c test-dest-deriv env-and-cla/bak-dir
+
+check.exitcode:0
+check.stdout.file.eq:output/root.stdout.txt

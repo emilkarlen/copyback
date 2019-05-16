@@ -1,0 +1,37 @@
+# Tests syncing a directory to an existing backup.
+# The project is a directory project.
+# The existing backup is a plain directory.
+#
+# Checks that
+#   * exactly one file (the backup) remains.
+#   * the contents of the directory created is identical to the source directory,
+#   * the backup has got the right name.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-update
+name:sync-dir-existing-plain
+home:..
+
+setup.install:data/orig-plain/a_name
+
+# Code from m4 file: Set environment variables used later.
+M4_CheckNewBackupName_env_set
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --print-filename --directory --update --last -c a_name ${SIMPTEST_HOME}/data/to-sync
+
+check.exitcode:0
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+# Check that exactly one backup file exists (no lock file).
+check.run.cmdline:test $(ls a_name | wc -l) == '1'
+
+# Compare the contents.
+check.compare.eq:data/final:$(cat ${SIMPTEST_STDOUT})
+
+# Code from m4 file: Check that the backup name is correct (as described in the Test Plan).
+M4_CheckNewBackupName_check(`-r __SIMPTEST_TESTROOT__/a_name')

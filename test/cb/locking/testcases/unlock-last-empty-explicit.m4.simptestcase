@@ -1,0 +1,21 @@
+# Tests unlock --last for a project with no backups.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-unlocking
+name:unlock-last-empty-explicit
+home:..
+
+setup.install:data/empty
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --prfn unlock --last --explicit empty
+
+check.exitcode:M4_EXIT_ERROR
+
+check.stdout.empty
+
+# Check for the right number of files.
+check.run.cmdline:test $(ls empty | wc -l) == '2'

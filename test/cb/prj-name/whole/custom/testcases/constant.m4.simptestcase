@@ -1,0 +1,17 @@
+# Tests that the project name is set correctly.
+# Tests an "absolute" name and a custom EMPTY project name head.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:prj-name/whole/custom/constant
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root=. --program --project-name-head=A/B/C --constant ABS/ABS --debug -- -c print-prjname ls
+
+# "Standard" general checks.
+check.exitcode:0
+check.stderr.empty
+
+check.stdout.file.eq:output/constant.txt

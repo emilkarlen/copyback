@@ -1,0 +1,3 @@
+bak-root/a_name
+bak-root/a_name/copyback-20070510-153040-_a_tag_.gz
+20070510-153040///_a_tag_/copyback-20070510-153040/copyback-20070510-153040-_a_tag_.gz/.gz

@@ -1,0 +1,25 @@
+# Test deriving the Backup destination "prj-file".
+#
+# The command 'lock' is run (but stopped after deriving our info).
+# The selection is 'date'.
+# The project directory is given implicitly.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:bak-dest/bak-file/rel-lock-last-implicit
+home:..
+
+setup.run.cmdline:mkdir bak-root
+setup.run.cmdline:cp -rdp ${SIMPTEST_HOME}/M4_COMMON_DATA/bak-info bak-root/a_name
+
+setup.run.cmdline:touch a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bak-root --pnh --basename print-backup-file --date 20070510-143502 a_name
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+check.exitcode:0
+
+#check.stdout.file.eq:output/date.txt

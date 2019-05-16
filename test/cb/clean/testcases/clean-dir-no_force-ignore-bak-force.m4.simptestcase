@@ -1,0 +1,22 @@
+# Tests cleaning a directory without --force.
+# This test gives the BACKUP-OPTION "force", but this should be
+# a different option than the CLEAN-OPTION "force". So the result
+# should be NOT giving --force.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/clean
+name:dir-no_force-ignore-bak-force
+home:..
+
+setup.install:data/dir/original/a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --force clean --explicit a_name
+
+check.exitcode:0
+
+# Check that the contents is the final contents.
+check.compare.eq:data/dir/final/no_f/a_name:a_name

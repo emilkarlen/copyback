@@ -1,0 +1,15 @@
+# Tests the setting of SRC to a program.
+
+m4_include(common.m4)
+
+application:copyback
+name:source-program-ok
+home:..
+
+setup.run.cmdline:mkdir bakroot
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bakroot --project-name-head --program -c prj-name --debug -- -c print-source command_line
+
+check.exitcode:0
+check.stderr.empty
+
+check.stdout.file.eq:output/source-program-ok.stdout.txt

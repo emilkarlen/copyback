@@ -1,0 +1,20 @@
+# Runs the tag command.
+#
+# Setting a new tag to a backup given explicitly.
+
+m4_include(common.m4)
+
+application:copyback
+name:tag/explicit
+home:..
+
+setup.install:M4_COMMON_DATA/bak-info:a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --print-filename tag --explicit a_name/copyback-20070510-153040-_a_tag_.gz NEW_TAG
+
+check.exitcode:0
+
+check.stdout.file.eq:output/20070510-153040-NEW_TAG.txt
+
+check.run.cmdline:test -f a_name/copyback-20070510-153040-NEW_TAG.gz
+check.run.cmdline:test ! -f a_name/copyback-20070510-153040-_a_tag_.gz

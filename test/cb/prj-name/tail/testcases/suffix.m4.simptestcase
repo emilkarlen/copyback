@@ -1,0 +1,15 @@
+# Tests that the project name is set correctly: tests an suffix name.
+
+m4_include(common.m4)
+
+application:copyback
+name:prj-name/tail/suffix
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --suffix ${SIMPTEST_HOME} --debug -- -c print-prjname-tail $SIMPTEST_HOME/data/prjname-test-file
+
+# "Standard" general checks.
+check.exitcode:0
+check.stderr.empty
+
+check.stdout.file.eq:output/suffix.stdout.txt

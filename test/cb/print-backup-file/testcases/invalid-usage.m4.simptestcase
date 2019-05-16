@@ -1,0 +1,12 @@
+# Test print-backup-file with invalid usage.
+
+m4_include(common.m4)
+
+application:copyback
+name:print-backup-file/invalid-usage
+home:..
+
+M4_SETUP_TESTDATA
+M4_TEST_RUN_PBF_WITH(`NOT-AN-OPTION')
+check.exitcode:M4_EXIT_USAGE
+check.stdout.empty

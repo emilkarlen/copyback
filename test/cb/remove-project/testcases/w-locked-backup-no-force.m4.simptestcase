@@ -1,0 +1,21 @@
+# -*- m4 -*-
+# Tests trying to remove a project that is locked with a writable lock,
+# without using the --force option.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/remove-project
+name:w-locked-backup-no-force
+home:..
+
+M4_SETUP_SRC_AND_BACKUP(`--lock')
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback M4_optsRoot M4_optsPrjName remove-project M4_PrjNameSrcDir
+
+check.exitcode:!0
+
+# Check that the PD contains exactly two files (backup + lock).
+check.run.cmdline:test $(ls $(M4_printPrjDir) | wc -l) = 2

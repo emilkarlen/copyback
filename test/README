@@ -1,0 +1,18 @@
+FILES
+--------------------
+Makefile
+	The target "check" executes all test packages contained in this
+        directory.
+	Starts with the test packages for the tools, because these are used
+	by the non-tool test packages.
+
+DIRECTORIES
+--------------------
+common
+	Files common to many test packages.
+stdin-is-backupname
+	Test of the tool `stdin-is-backupname'.
+	This test package should be run before the non-tool packages, since
+	it is used by these.
+copyback
+	Test of src/bin/copyback

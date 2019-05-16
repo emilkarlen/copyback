@@ -1,0 +1,14 @@
+# Tests the check for existing project root directory.
+# 
+# Fails because it doesn't exist.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/env-and-cla/prj-dir/file/existance-fail
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --file -b --root directory --project-name-head --debug -- -c test-dest-deriv -e env-and-cla/prj-dir/file ${SIMPTEST_HOME}/data/source-file.txt
+
+check.exitcode:M4_EXIT_ERROR

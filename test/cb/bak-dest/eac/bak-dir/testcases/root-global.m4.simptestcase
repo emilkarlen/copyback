@@ -1,0 +1,18 @@
+# Tests setting the backup root directory from environment variables and
+# command line options.
+# 
+# Tests setting the global root using --global-root.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/bak-dir/root-global
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root-global /_GLOBAL-ROOT_ --debug -- -c test-dest-deriv env-and-cla/bak-dir
+
+M4_REPLACE_USER_IN_STDOUT
+
+check.exitcode:0
+check.stdout.file.eq:output/global.stdout.txt

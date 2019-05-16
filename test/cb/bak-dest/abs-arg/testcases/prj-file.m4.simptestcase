@@ -1,0 +1,18 @@
+# Tests deriving the backup destination.
+#
+# The destination is prj-file.
+# The destination need not exist.
+#
+# Uses m4 preprocessing.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:bak-dest/abs-arg/prj-file
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -c test-dest-deriv abs-arg/prj-file copyback-20010101-0202
+
+check.exitcode:0
+check.stdout.file.eq:output/copyback-20010101-0202.txt

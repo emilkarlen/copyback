@@ -1,0 +1,26 @@
+# -*- shell-script -*-
+# Tests removing a project where the projet directory contain non-backup files.
+#
+# All backups should be removed, but the directory should not.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/remove-project
+name:other-files
+home:..
+
+setup.run.cmdline:mkdir brd
+setup.run.cmdline:mkdir brd/pd
+setup.run.cmdline:source ${SIMPTEST_HOME}/M4_COMMON_BIN/lib-tools.bash; touch brd/pd/$(printBackupName -t 20101211_1230)
+setup.run.cmdline:touch brd/pd/other-file
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback remove-project --explicit --force brd/pd
+
+check.exitcode:0
+
+# Check that the PD contains exactly the "other" file.
+check.run.cmdline:test $(ls brd/pd | wc -l) = 1
+check.run.cmdline:stat brd/pd/other-file

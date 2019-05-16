@@ -1,0 +1,19 @@
+# Tests cleaning a project.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/clean
+name:prj-basename-no_force
+home:..
+
+setup.install:data/dir/original/a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --file -b clean ${SIMPTEST_HOME}/data/file-prj/a_name
+
+check.exitcode:0
+
+# Check that the contents of the project root is the "final" contents.
+check.compare.eq:data/dir/final/no_f/a_name:a_name

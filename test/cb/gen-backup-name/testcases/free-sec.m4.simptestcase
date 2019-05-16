@@ -1,0 +1,13 @@
+# Tests genTargetNameAndLockIt in case of existing backups with seconds.
+
+m4_include(common.m4)
+
+application:copyback
+name:free-sec
+home:..
+
+setup.install:data/sec
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -d 20070612_10\\:30\\:20 -c print-free-dt-part sec
+
+check.stdout.file.eq:output/free-20070612_103020.txt

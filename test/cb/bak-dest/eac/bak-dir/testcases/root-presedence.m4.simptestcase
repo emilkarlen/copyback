@@ -1,0 +1,18 @@
+# Tests setting the backup root directory from environment variables and
+# command line options.
+# 
+# Tests that --root has presedence over COPYBACK_ROOT(_GLOBAL)?.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/bak-dir/root-presedence
+home:..
+
+env.set:COPYBACK_ROOT_GLOBAL:wrong1
+env.set:COPYBACK_ROOT:wrong2
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root /_ROOT_ --debug -- -c test-dest-deriv env-and-cla/bak-dir
+
+check.exitcode:0
+check.stdout.file.eq:output/root.stdout.txt

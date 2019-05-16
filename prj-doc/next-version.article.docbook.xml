@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<article>
+  <title>Next version</title>
+
+  <section>
+    <title>rsync 2.6.good</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>--filter=dir-merge_.copyback-filter</term>
+
+        <listitem>
+          <para>Only relevant if the source is a directory.</para>
+
+          <para>If a directory being backed up - either the directory given as
+          <replaceable>SOURCE</replaceable> or any subdirectory of it -
+          contains a file called <filename>.copyback-filter</filename>, then
+          <command>rsync</command> reads include/exlude filters from it.
+          Include/exclude filters tells which files are include or exclude in
+          the backup.</para>
+
+          <para>Filters from a <filename>.simback-filter</filename> file are
+          applied to files in the directory containing the file and
+          subdirectories of it.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>--archive</term>
+
+        <listitem>
+          <para>Preserve most attributes of files and directories.</para>
+
+          <para>Directories are copied recursively.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>--executability</term>
+
+        <listitem>
+          <para>Preserve the executability mode of files.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>--xattrs</term>
+
+        <listitem>
+          <para>Preserve "ACL"s of files (if there are any).</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>--acls</term>
+
+        <listitem>
+          <para>Preserve "extended attributes" of files (if there are
+          any).</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</article>

@@ -1,0 +1,26 @@
+# Tests deriving the backup destination.
+#
+# The destination is prj-file.
+# The destination must exist.
+#
+# The destination is an existing gzipped file backup.
+#
+# Note: This test will fail if the current directory for simptestcase (or simptest)
+#       is not the realpath of that directory.  What this means that the name of the
+#       current directory cannot contain symbolic links.
+#
+# Uses m4 preprocessing.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:bak-dest/abs-arg/prj-file/existing/file
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -c test-dest-deriv abs-arg/prj-file/existing ${SIMPTEST_HOME}/data/copyback-20010203-040502.gz
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+check.exitcode:0
+check.stdout.file.eq/replaced:output/existing-file-backup.txt

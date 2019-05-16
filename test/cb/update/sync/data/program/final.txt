@@ -1,0 +1,4 @@
+New contents for program project.
+Used in testing of synchronizing of program projects.
+
+The contents of this file is printed by scripts/print-program-prj-new-contents

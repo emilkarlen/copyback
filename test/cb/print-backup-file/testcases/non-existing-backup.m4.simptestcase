@@ -1,0 +1,12 @@
+# Test print-backup-file with a non-existing backup.
+
+m4_include(common.m4)
+
+application:copyback
+name:print-backup-file/non-existing-backup
+home:..
+
+M4_SETUP_TESTDATA
+M4_TEST_RUN_PBF_WITH(`--tag NON-EXISTING-TAG')
+check.exitcode:M4_EXIT_ERROR
+check.stdout.empty

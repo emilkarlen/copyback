@@ -1,0 +1,37 @@
+# Tests adding to an existing backup and locking. The project is a directory project.
+#
+# Checks that
+#   * a directory is created,
+#   * the backup has got the right name.
+#   * a lock file is created
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-update
+name:add-dir
+home:..
+
+setup.install:data/orig-plain/a_name
+
+# Code from m4 file: Set environment variables used later.
+M4_CheckNewBackupName_env_set
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --print-filename --last --directory --update --no-delete --lock --constant a_name ${SIMPTEST_HOME}/data/to-add
+
+check.exitcode:0
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+# Check that exactly two files - the backup and the lock file.
+check.run.cmdline:test $(ls a_name | wc -l) == '2'
+
+check.compare.eq:data/final:$(cat ${SIMPTEST_STDOUT})
+
+# Code from m4 file: Check that the backup name is correct (as described in the Test Plan).
+M4_CheckNewBackupName_check(`-r __SIMPTEST_TESTROOT__/a_name')
+
+# Check that the backup is locked.
+test.run.cmdline/prepend-home:M4_COMMON_BIN/backup-is-locked $(cat ${SIMPTEST_STDOUT})

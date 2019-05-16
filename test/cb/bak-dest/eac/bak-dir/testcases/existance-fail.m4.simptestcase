@@ -1,0 +1,14 @@
+# Tests the check for backup project root directory.
+# 
+# Fails because it doesn't exist.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/env-and-cla/bak-dir/file/existance-fail
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root directory --debug -- -c test-dest-deriv -e env-and-cla/bak-dir
+
+check.exitcode:M4_EXIT_ERROR

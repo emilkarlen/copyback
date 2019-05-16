@@ -1,0 +1,13 @@
+# Tests the tool `stdin-is-backupname'.
+#
+# MISMATCH because no datetime is given.
+#
+
+application:copyback/common/scripts/stdin-is-backupname
+name:backupname-MATCH-1
+home:..
+
+test.stdin:input/backupname-20010203+0405.txt
+test.run.cmdline/prepend-home:../common/scripts/stdin-is-backupname
+
+check.exitcode:1

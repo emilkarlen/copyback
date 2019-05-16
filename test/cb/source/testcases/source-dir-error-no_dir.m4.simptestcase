@@ -1,0 +1,12 @@
+# Tests the setting of SRC to a directory, when the source does not exist.
+
+m4_include(common.m4)
+
+application:copyback
+name:source-dir-error-no_dir
+home:..
+
+setup.run.cmdline:mkdir bakroot
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bakroot --project-name-head --directory -b --debug -- -c print-source ${SIMPTEST_HOME}/data/no_directory-project
+
+check.exitcode:M4_EXIT_ERROR

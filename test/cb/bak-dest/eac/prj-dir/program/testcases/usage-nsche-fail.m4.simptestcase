@@ -1,0 +1,15 @@
+# Tests setting the project root directory from environment variables and
+# command line options.
+# 
+# Fails because an invalid projecttype is specified (-p).
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/env-and-cla/prj-dir/program/usage-nametype-fail
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --program -b --root . --project-name-head --debug -- -c test-dest-deriv env-and-cla/prj-dir/program ls
+
+check.exitcode:M4_EXIT_USAGE

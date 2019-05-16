@@ -1,0 +1,22 @@
+# -*- m4 -*-
+# Tests trying to remove a project that is locked with a read-only lock,
+# using the --force option.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/remove-project
+name:r-locked-backup-force
+home:..
+
+M4_SETUP_SRC_AND_BACKUP(`--lock')
+setup.run.cmdline:chmod -w $(M4_printPrjDir)/*.lock
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback remove-project --force --explicit $(M4_printPrjDir)
+
+check.exitcode:!0
+
+# Check that the PD contains exactly two files (backup + lock).
+check.run.cmdline:test $(ls $(M4_printPrjDir) | wc -l) = 2

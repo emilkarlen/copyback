@@ -1,0 +1,10 @@
+#! @BASH@
+
+# run-tests - make -C ${srcdir}/tests check, with PATH prepended with ../bin
+
+#
+#  Environment: srcdir - must be set to the project root directory.
+#
+
+PATH=@abs_srcdir@:${PATH}
+make -C @abs_top_builddir@/test check

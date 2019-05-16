@@ -1,0 +1,74 @@
+#!/bin/bash
+# Runs `copyback' with the test-command `print-rsync-options'.
+
+sUsage='usage: SRC-BIN-DIR SOURCE [ COPYBACK-OPTIONS... ]
+
+SRC-BIN-DIR is where copyback is found.
+SOURCE is a file/directory that could be backed up.
+COPYBACK-OPTIONS are options passed to copyback.
+
+Directory names must be absolute since the pwd is changed.
+TMPDIR or /tmp is used as a temporary directory.'
+
+##############################################################################
+# A. Check usage.
+# B. Get arguments.
+#    After this, $@ are the options to pass to copyback.
+# C. Exit if temporary dir doesn't exist or isn't writable.
+# D. Create files that should be matched by patterns.
+# E. Changes pwd to the temporary directory and runs copyback.
+# F. Remember the exit code from `copyback', remove the temporary
+#    directory and exit with the remembered code.
+#    Also pop back the previous directory.
+##############################################################################
+
+### A ###################
+
+if [ $# -lt 2 -o "_$1" == '_--help' ]; then
+	echo "${sUsage}" >&2
+	exit 1
+fi
+
+### B ####################
+
+dirTmp=${TMPDIR:-/tmp}
+dirBin=${1}
+src=${2}
+shift; shift
+
+### C ####################
+
+if [ ! -d "${dirTmp}" -o ! -w "${dirTmp}" ]; then
+	echo "Not a writable temporary directory: ${dirTmp}" >&2
+	echo "Set it using TMPDIR." >&2
+	exit 1
+fi
+
+### D ####################
+
+dirMyTmp="${dirTmp}/copyback-syncdir-opts-$$"
+mkdir "${dirMyTmp}"
+mkdir --parents "${dirMyTmp}/bak-root/a_name"
+touch "${dirMyTmp}/include-file"
+touch "${dirMyTmp}/exclude-file"
+
+### E ####################
+
+pushd . > /dev/null
+cd "${dirMyTmp}"
+${dirBin}/copyback "$@" -c a_name --root bak-root --project-name-head \
+	            --chmod=CHMODE \
+	            --exclude='*EXCLUDE-PAT*' --exclude-from exclude* \
+	            --include='*INCLUDE-PAT*' --include-from include* \
+	            --cvs-exclude --filter=FILTER1 --filter=FILTER2   \
+	            --rsync-filter -F                                 \
+                    --debug -- -c print-rsync-options "${src}"
+
+### F ####################
+
+st=$?
+popd > /dev/null
+
+rm -rf "${dirMyTmp}"
+
+exit ${st}

@@ -1,0 +1,16 @@
+# Tests setting the backup root directory from environment variables and
+# command line options.
+# 
+# Tests that --global-root plus --global-root-suffix works.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/bak-dir/root-global+suffix
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root-global /_GLOBAL-ROOT_ --root-global-suffix _CUSTOM_ROOT_SFX_ --debug -- -c test-dest-deriv env-and-cla/bak-dir
+
+check.exitcode:0
+check.stdout.file.eq:output/global+suffix.stdout.txt

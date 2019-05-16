@@ -1,0 +1,14 @@
+# Tests genTargetNameAndLockIt in case of existing backups
+# with the used second - a clash.
+
+m4_include(common.m4)
+
+application:copyback
+name:free-sec-clash
+home:..
+
+setup.install:data/sec
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug -- -d 20070612_10\\:30\\:15 -c print-free-dt-part no-sec
+
+check.stdout.empty

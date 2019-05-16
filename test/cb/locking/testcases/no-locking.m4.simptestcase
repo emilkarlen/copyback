@@ -1,0 +1,24 @@
+# Tests to create a backup without locking it.
+# The project is a file.
+#
+# Checks that
+#   * exactly one file (the backup) remains.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-locking
+name:no-locking
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --file -c a_name ${SIMPTEST_HOME}/data/file-to-backup.txt
+
+check.exitcode:0
+
+# Check that exactly one file exists (only the backup, no lockfile).
+check.run.cmdline:test $(ls a_name | wc -l) == '1'
+
+# Check that the file is a plain file.
+check.run.cmdline:test -f a_name/$(ls a_name)

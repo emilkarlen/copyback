@@ -1,0 +1,12 @@
+# Tests the setting of SRC, when the source is a directory.
+
+m4_include(common.m4)
+
+application:copyback
+name:source-file-error-dir
+home:..
+
+setup.run.cmdline:mkdir bakroot
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root bakroot --project-name-head --file -b --debug -- -c print-source ${SIMPTEST_HOME}/data/directory-project
+
+check.exitcode:M4_EXIT_ERROR

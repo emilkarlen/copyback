@@ -1,0 +1,28 @@
+# Tests deriving missing options automatically.
+#
+# Derive the the source type and the naming scheme.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/cleaning
+name:autoderive-options/list-file-home
+home:..
+
+# Create both the source and an project directory, since the operation 'list'
+# requires it to exist.
+setup.run.cmdline:mkdir --parents BAK-ROOT/home/SOURCES/FILE.txt
+setup.run.cmdline:mkdir SOURCES
+setup.run.cmdline:touch SOURCES/FILE.txt
+
+test.run.cmdline/prepend-home:scripts/run-copyback-with-custom-home ${SIMPTEST_HOME}/M4_SRC_BIN --root BAK-ROOT --debug -- -c print-derived-options -- list SOURCES/FILE.txt
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+# "Standard" "general" checks.
+check.exitcode:0
+check.stderr.empty
+
+check.stdout.file.eq/replaced:output/list-file-home.txt

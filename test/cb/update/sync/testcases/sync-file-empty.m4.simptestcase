@@ -1,0 +1,29 @@
+# Tests syncing a file to an empty backup - aborted with EXIT_ERROR.
+#
+# Checks that
+#   * exactly one file (the backup) remains.
+#   * the contents of the directory created is identical to the source directory,
+#   * the backup has got the right name.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback-update
+name:sync-file-existing
+home:..
+
+setup.install:data/file/empty/file.txt
+
+# Code from m4 file: Set environment variables used later.
+M4_CheckNewBackupName_env_set
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --print-filename --file --update --last --basename ${SIMPTEST_HOME}/data/file/final/file.txt
+
+check.exitcode:M4_EXIT_ERROR
+
+# Check that exactly one backup file exists (no lock file).
+check.run.cmdline:test $(ls file.txt | wc -l) == '0'
+
+check.stdout.empty

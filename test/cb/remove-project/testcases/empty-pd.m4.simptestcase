@@ -1,0 +1,25 @@
+# -*- shell-script -*-
+# Tests removing a project that is totaly empty - no backup files and no other
+# files.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/remove-project
+name:empty-pd
+home:..
+
+setup.run.cmdline:mkdir brd
+setup.run.cmdline:mkdir brd/pd
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback remove-project --explicit brd/pd
+
+check.exitcode:0
+
+# Check that the BRD exists.
+check.run.cmdline: test -d brd
+
+# Check that the BRD is empty.
+check.run.cmdline:test $(ls brd | wc -l) = 0

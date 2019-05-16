@@ -1,0 +1,13 @@
+# Tests that the project name is set correctly.
+# Tests a basename name and a default project name head.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:prj-name/whole/default/basename
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root=. --file  -b --debug -- -c print-prjname ${SIMPTEST_HOME}/data/prjname-test-file
+
+check.stdout.file.eq:output/basename.txt

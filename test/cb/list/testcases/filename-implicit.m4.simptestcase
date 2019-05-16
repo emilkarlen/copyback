@@ -1,0 +1,16 @@
+# Tests listing a project's backups by giving the directory implicitly.
+# The format is --filename.
+
+m4_include(common.m4)
+
+application:copyback/list
+name:list-filename-implicit
+home:..
+
+setup.install:data/a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --directory --basename --print-filename list a_name
+
+check.exitcode:0
+
+check.stdout.file.eq:output/filename.txt

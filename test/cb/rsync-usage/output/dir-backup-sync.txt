@@ -1,0 +1,1 @@
+-- --chmod CHMODE --exclude *EXCLUDE-PAT* --exclude-from exclude-file --include *INCLUDE-PAT* --include-from include-file --cvs-exclude --filter FILTER1 --filter FILTER2 -F -F --delete-excluded --archive

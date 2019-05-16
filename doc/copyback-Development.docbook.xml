@@ -1,0 +1,1107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<book>
+  <title>Dokumentation av copyback</title>
+
+  <chapter>
+    <title>Filer som ingår</title>
+
+    <section>
+      <title>Körbara program</title>
+
+      <para>De här filerna utgör körbara program.</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>src/copyback</term>
+
+          <listitem>
+            <para>Huvudprogrammet.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>src/copyback-mkdirstruct</term>
+
+          <listitem>
+            <para>Skapar katalogstruktur där säkerhetskopiorna ska
+            lagras.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>src/copyback-system</term>
+
+          <listitem>
+            <para>Körs av root då alla användares säkerhetskopior ska
+            uppdateras.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>src/copyback-cdbackup</term>
+
+          <listitem>
+            <para>Körs av root då alla användare säkerhetskopior ska brännas
+            på en cd-skiva.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <section>
+        <title>copyback</title>
+
+        <para>Det är det här programmet som används för att skapa eller
+        uppdatera en säkerhetskopia.</para>
+
+        <para>Körbart av alla som ska kunna använda copyback.</para>
+
+        <para>Installeras i:
+        <filename><replaceable>INSTALLDIR</replaceable>/bin</filename></para>
+      </section>
+
+      <section>
+        <title>copyback-mkdirs</title>
+
+        <para>Skapar katalogstruktur där säkerhetskopiorna ska bevaras.</para>
+
+        <para>Används en gång av root innan copyback kan användas av normala
+        användare.</para>
+
+        <para>Körs sedan en gång för varje ny användare som tillkommer. (Eller
+        en gång för en ny grupp av användare, eftersom programmet kan hantera
+        flera användare samtidigt.)</para>
+
+        <para>Installeras i:
+        <filename><replaceable>INSTALLDIR</replaceable>/sbin</filename></para>
+
+        <para>Skapar följande katalogstruktur</para>
+
+        <programlisting>$COPYBACKROOT/
+   global/
+   users/
+      <replaceable>user</replaceable>/
+         home/
+         pgm-output/
+         misc/
+   tmp/
+      users/
+         <replaceable>user</replaceable>/
+            home/      # Aliaset 'sbsdht' lagrar "inkrementella" backuper här.
+                       # Kan anv. för t ex versionshanterad kod som inte är klar
+                       # att commitas till repositoryn ännu.</programlisting>
+      </section>
+
+      <section>
+        <title>copyback-system</title>
+
+        <para>Körs av root då alla användares säkerhetskopior ska
+        uppdateras.</para>
+
+        <para>För att en användares säkerhetskopia verkligen ska uppdateras av
+        programmet måste den finnas med i roots lista över sådana, vilken
+        utgörs av filen
+        <filename><replaceable>root-home</replaceable>/.copyback-system-userlist</filename>.</para>
+
+        <para>Själva uppdateringen av en användares säkerhetskopia(or) består
+        i att exekvera filen <filename>.copyback-system-user</filename> i
+        dennes hemkatalog. För att uppdateringen ska utföras för en användare
+        krävs både att användares namn finns på en rad i
+        <filename>tilde/root/.copyback-system-userlist</filename> och att
+        filen <filename>.copyback-system-user</filename> finns i användarens
+        hemkatalog.</para>
+
+        <para>Installeras i:
+        <filename><replaceable>INSTALLDIR</replaceable>/sbin</filename></para>
+      </section>
+
+      <section>
+        <title>copyback-cdbackup</title>
+
+        <para>Körs av root då alla användare säkerhetskopior ska brännas på en
+        cd-skiva.</para>
+
+        <para>Körtbart av root.</para>
+
+        <para>Installeras i:
+        <filename><replaceable>INSTALLDIR</replaceable>/sbin</filename></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Systemglobala filer</title>
+
+      <para>De här filerna är systemglobala filer. Skelettfiler och filer som
+      kan användas av varje användare.</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>sysconf/copybackcommandsrc</term>
+
+          <listitem>
+            <para>bash-skript som kan sourcas in av varje användares
+            <filename>.copyback-user</filename> för att få tillgång till
+            "färdiga" copyback-varianter.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>sysconf/copyback-exclude-pgm</term>
+
+          <listitem>
+            <para>Skelettfil för varje användares egen
+            <filename>.copyback-exclude</filename>.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>sysconf/copyback-system-user</term>
+
+          <listitem>
+            <para>Skelettfil för varje användares egen
+            <filename>.copyback-user</filename>.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <section>
+        <title>copybackcommandsrc</title>
+
+        <para>bash-skript som kan sourcas in av varje användares
+        .copyback-user för att få tillgång till "färdiga"
+        copyback-varianter.</para>
+
+        <para>Installeras i:
+        <filename><replaceable>INSTALLDIR</replaceable>/share/copyback</filename></para>
+      </section>
+
+      <section>
+        <title>impback-exclude-pgm</title>
+
+        <para>Skelettfil för varje användares egen .copyback-exclude.</para>
+
+        <para>Installeras i:
+        <filename><replaceable>INSTALLDIR</replaceable>/share/copyback</filename></para>
+      </section>
+
+      <section>
+        <title>copyback-system-user</title>
+
+        <para>Skelettfil för varje användares egen .copyback-user.</para>
+
+        <para>En länk till den här filen skapas som
+        <filename>/etc/skel/.copyback-user</filename>.</para>
+
+        <para>Installeras i:
+        <filename><replaceable>INSTALLDIR</replaceable>/share/copyback</filename></para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Design och implementation</title>
+
+    <para>Beskriver vissa delar av designen och implementationen.</para>
+
+    <section>
+      <title>Uppdatering av innehållet i en befintlig säkerhetskopia</title>
+
+      <section>
+        <title>Specifikation</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>Om ingen säkerhetskopia existerar för katalogen skapas en
+            ny.</para>
+          </listitem>
+
+          <listitem>
+            <para>Om säkerhetskopior existerar för katalogen uppdateras den
+            senaste av dessa. Efter uppdateringen ändras dess namn för att
+            avspegla den tidpunkt då uppdateringen gjordes.</para>
+          </listitem>
+
+          <listitem>
+            <para>Filer som ändrats kopieras på nytt.</para>
+          </listitem>
+
+          <listitem>
+            <para>Filer som tillkommit kopieras.</para>
+          </listitem>
+
+          <listitem>
+            <para>Filer som borttagits raderas.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>Villkor</title>
+
+        <para>Fungerar bara om källan är en katalog och denna lagras
+        oarkiverad och okomprimerad. Avgör detta genom: 1) Källan måste vara
+        en katalog. 2) Det existerar en målkatalog (olåst) för projektet. 3)
+        Tar-arkivering eller gzip-komprimering får inte anges.</para>
+      </section>
+
+      <section>
+        <title>Metod</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>Tag reda på den senaste säkerhetskopian som är en katalog
+            (OLDTRG).</para>
+
+            <para>Gör en ny säkerhetskopia om ingen finns och avsluta. Avsluta
+            om den är låst.</para>
+          </listitem>
+
+          <listitem>
+            <para>Skapa en låsfil för aktuell tidpunkt.</para>
+          </listitem>
+
+          <listitem>
+            <para>Utför ädringar (uppdatering) i den befintliga
+            säkerhetskopian (OLDTRG)</para>
+          </listitem>
+
+          <listitem>
+            <para>Kopiering av nya och ändrade filer:</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>Generera en lista av de filer som finns i källkatalogen
+                exklusive filer som ska uteslutas.</para>
+              </listitem>
+
+              <listitem>
+                <para>För varje fil i denna lista: Om den inte finns i OLDTRG
+                så kopiera den dit. Om den är nyare än den i OLDTRG så kopiera
+                den dit.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+
+          <listitem>
+            <para>Radering av borttagna filer:</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>Generera en lista av filer som finns i OLDTRG.</para>
+              </listitem>
+
+              <listitem>
+                <para>För varje fil i listan: Radera den om den inte finns i
+                källkatalogen eller är en fil som ska exkluderas.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+
+          <listitem>
+            <para>Byt namn på OLDTRG till det namn den genererade låsfilen har
+            (exklusive extensionen).</para>
+          </listitem>
+
+          <listitem>
+            <para>Ta bort låsfilerna.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Test Plan</title>
+
+    <section>
+      <title>Purpose and goals</title>
+
+      <para>The purpose is to test <emphasis>functionallity</emphasis>.</para>
+
+      <para>Not tested:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>configuration tests (test that the program works under
+          different configurations)</para>
+        </listitem>
+
+        <listitem>
+          <para>installation tests (test that it is possible to install the
+          program in different systems)</para>
+        </listitem>
+
+        <listitem>
+          <para>integrity tests (tests ability to handle errors and
+          exceptions)</para>
+        </listitem>
+
+        <listitem>
+          <para>performance tests</para>
+        </listitem>
+
+        <listitem>
+          <para>work load tests</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Test strategies</title>
+
+      <para>The testing uses:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>the test program Simptest</para>
+        </listitem>
+
+        <listitem>
+          <para>a special test mode of the copyback program itself</para>
+        </listitem>
+
+        <listitem>
+          <para>standard Unix utilities</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The test mode of copyback is documented in a separate
+      chapter.</para>
+
+      <section>
+        <title>Tools</title>
+
+        <para>The testing uses the test program Simptest and many of the
+        standard Unix utilities. These tools must be installed and accessible.
+        These are described under <xref
+        linkend="testplan.Resources" />.</para>
+
+        <para>The different test packages are located in separate directories.
+        Each directory contains the standard directory layout used by
+        Simptest. Each directory also contains a Makefile that instructs
+        <command>make</command> run the tests recursively for each test
+        package.</para>
+      </section>
+
+      <section id="testplan.SpecialTestStrategies"
+               xreflabel="Special Test Strategies">
+        <title>Special Test Strategies</title>
+
+        <para>Some strategies are used many times. These are described
+        here.</para>
+
+        <section>
+          <title>Checking the name of the created backup</title>
+
+          <para>The name of a backup includes the current date and time.
+          Therefore it cannot be checked against a constant string.
+          Furthermore, because the minute, hour, day ... can change during the
+          execution of a test, it is not possible to register the data,time
+          before or after the execution and use that time.</para>
+
+          <para>Solution: The smallest time unit used by copyback in backup
+          names is the minute. This means that if the execution of copyback in
+          the test takes less than a minute, either the time before or after
+          must match the time used by <command>copyback</command>. Therefore,
+          register the date+time <emphasis>before and after</emphasis> the
+          execution of the test program.</para>
+
+          <para>Use the test tool <xref
+          linkend="testplan.stdin-is-backupname" /> to get the name of a
+          backup for the current time.</para>
+        </section>
+      </section>
+    </section>
+
+    <section id="testplan.Resources" xreflabel="Resources">
+      <title>Resources</title>
+
+      <para>The test resources are located in the subdirectory
+      <filename>tests</filename>:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>tests</term>
+
+          <listitem>
+            <variablelist>
+              <varlistentry>
+                <term>common</term>
+
+                <listitem>
+                  <para>Custom test tools used by many test packages.</para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>...</term>
+
+                <listitem>
+                  <para>Test suite for the tools in
+                  <filename>common</filename>.</para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term>copyback</term>
+
+                <listitem>
+                  <para>Test packages for <command>copyback</command>.</para>
+                </listitem>
+              </varlistentry>
+            </variablelist>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>Each test package has its own directory.</para>
+
+      <section>
+        <title>Simptest</title>
+
+        <para>The Simptest program must be installed and accessible. The
+        programs used are:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><command>simptest</command></para>
+          </listitem>
+
+          <listitem>
+            <para><command>simptestcase</command></para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>Standard Unix programs</title>
+
+        <para>Some of the "standard" Unix utilities used are:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para><command>make</command></para>
+          </listitem>
+
+          <listitem>
+            <para><command>bash</command></para>
+          </listitem>
+
+          <listitem>
+            <para><command>find</command></para>
+          </listitem>
+
+          <listitem>
+            <para>GNU <command>sed</command></para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>Custom tools</title>
+
+        <para>Some test tools have been developed inside this project.</para>
+
+        <variablelist>
+          <varlistentry id="testplan.stdin-is-backupname"
+                        xreflabel="stdin-is-backupname">
+            <term>tests/common/scripts/stdin-is-backupname</term>
+
+            <listitem>
+              <para>Determines if the contents of stdin is exactly the name of
+              the backup specified by the arguments to the program.</para>
+
+              <para>The arguments can specify each part of a backup name.
+              Additionally, many possible values for the date+time part can be
+              given. This is because this part does not need to be
+              constant.</para>
+
+              <para>Used for testing the creation of backup names. See <xref
+              linkend="testplan.SpecialTestStrategies" />.</para>
+
+              <warning>
+                <para>The name must really match the backup names used by
+                copyback. If these change, this tool must also be
+                changed.</para>
+              </warning>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>tests/common/scripts/backup-is-locked</term>
+
+            <listitem>
+              <para>Tells if the backup, given as the single command line
+              argument, has a corresponding lock file.</para>
+
+              <para>Exits with 0 status if there is one, 1 of there isn't.
+              Other exit statuses are used for other errors.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>The copyback Test Mode</title>
+
+    <para>copyback can be run in a test mode. This is done by giving the the
+    string "<literal>test:</literal>" as the first non-option argument. After
+    this string follows options specific for testing. After this the normal
+    source argument can be given.</para>
+
+    <refentry>
+      <refnamediv>
+        <refname>copyback ... test: ...</refname>
+
+        <refpurpose>Exekvering för testning</refpurpose>
+      </refnamediv>
+
+      <refsynopsisdiv>
+        <cmdsynopsis>
+          <command>copyback</command>
+
+          <arg choice="opt">OPTIONS</arg>
+
+          <arg choice="plain">test:</arg>
+
+          <arg>TESET-OPTIONS</arg>
+        </cmdsynopsis>
+      </refsynopsisdiv>
+
+      <refsect1>
+        <title></title>
+
+        <para></para>
+      </refsect1>
+    </refentry>
+  </chapter>
+
+  <chapter>
+    <title>Test Model</title>
+
+    <section>
+      <title><command>copyback</command></title>
+
+      <section>
+        <title>Setting the backup and project root directory and the project
+        file</title>
+
+        <para>Test package directory:
+        <filename>test/copyback/backup-destination</filename></para>
+
+        <section>
+          <title>Giving the directory or file as an argument</title>
+
+          <para>These tests check that the root directories and the project
+          file is set correctly when these are given as an (non-option)
+          argument to the program. Environment variables or command line
+          options are not used.</para>
+
+          <para>Test subpackage directory: <filename>abs-arg</filename></para>
+        </section>
+
+        <section>
+          <title>Setting the root directories using environment and option
+          arguments</title>
+
+          <para>Checks that the setting of the project root directory is
+          correct when setting it using the <envar>SIMPACK_...</envar>
+          environment variables and/or command line options.</para>
+
+          <para>The project file cannot be set this way, so there are no tests
+          for this.</para>
+
+          <para>Test package organization:</para>
+
+          <variablelist>
+            <varlistentry>
+              <term>env-and-cla</term>
+
+              <listitem>
+                <para>Root directory for this package.</para>
+
+                <para>Each subpackage contains almost the same set of tests -
+                different combinations of envirnmant variables and command
+                line options are used to set the destination directory.</para>
+
+                <variablelist>
+                  <varlistentry>
+                    <term>bak-dir</term>
+
+                    <listitem>
+                      <para>Setting the backup root directory
+                      (dirBakRoot).</para>
+                    </listitem>
+                  </varlistentry>
+
+                  <varlistentry>
+                    <term>prj-dir</term>
+
+                    <listitem>
+                      <para>Setting the project root directory
+                      (dirPrjRoot).</para>
+
+                      <variablelist>
+                        <varlistentry>
+                          <term>program</term>
+
+                          <listitem>
+                            <para>The project type is program. This is the only
+                            valid type. The nametype must be absolute.</para>
+                          </listitem>
+                        </varlistentry>
+
+                        <varlistentry>
+                          <term>file</term>
+
+                          <listitem>
+                            <para>The project type is file or directory.</para>
+
+                            <para>The nametype is basename. This means that the
+                            source = filename must be
+                            <command>stat</command>:ed.</para>
+                          </listitem>
+                        </varlistentry>
+                      </variablelist>
+                    </listitem>
+                  </varlistentry>
+                </variablelist>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+
+        <section>
+          <title>Presedence of --r? over environment variables</title>
+
+          <para>Tests that the presedence between the --r? options and the
+          environment variables for setting the backup root directory is
+          correct.</para>
+
+          <para><command>copyback</command> is given -f for a file project and
+          -a for an absolute namn. But these options should be irrelevant for
+          these tests.</para>
+
+          <para>Testmode switches: -c root-dirs.</para>
+
+          <para>Files:
+          <filename>root-dirs-f-abs-<replaceable>X</replaceable>-presedence.simptest</filename></para>
+
+          <para>Where <replaceable>X</replaceable> is one of</para>
+
+          <variablelist>
+            <varlistentry>
+              <term>rg</term>
+
+              <listitem>
+                <para>Tests that --rg has higher presedence than
+                <varname>COPYBACK_GLOBAL</varname> and
+                <varname>COPYBACK_USER</varname>.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+
+          <variablelist>
+            <varlistentry>
+              <term>ru</term>
+
+              <listitem>
+                <para>Tests that --ru has higher presedence than
+                <varname>COPYBACK_GLOBAL</varname> and
+                <varname>COPYBACK_USER</varname>.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+
+          <variablelist>
+            <varlistentry>
+              <term>rd</term>
+
+              <listitem>
+                <para>Tests that --rd has higher presedence than
+                <varname>COPYBACK_GLOBAL</varname> and
+                <varname>COPYBACK_USER</varname>.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>SU</term>
+
+              <listitem>
+                <para>Tests that <varname>COPYBACK_USER</varname> has higher
+                presedence than <varname>COPYBACK_GLOBAL</varname>.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+
+        <section>
+          <title>--r? together with --rc</title>
+
+          <para>Tests that --rc works together with the options for setting
+          the root directory.</para>
+
+          <para><command>copyback</command> is given -f for a file project and
+          -a for an absolute namn. But these options should be irrelevant for
+          these tests.</para>
+
+          <para>Testmode switches: -c root-dirs.</para>
+
+          <para>Files:
+          <filename>root-dirs-f-abs-<replaceable>X</replaceable>+rc.simptest</filename></para>
+
+          <para>Where <replaceable>X</replaceable> is one of</para>
+
+          <variablelist>
+            <varlistentry>
+              <term>rg</term>
+
+              <listitem>
+                <para>Tests --rc together with --rg.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+
+          <variablelist>
+            <varlistentry>
+              <term>ru</term>
+
+              <listitem>
+                <para>Tests --rc together with --ru.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+
+          <variablelist>
+            <varlistentry>
+              <term>rd</term>
+
+              <listitem>
+                <para>Tests --rc together with --rd.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+      </section>
+
+      <section>
+        <title>Generation of the project name</title>
+
+        <para>Test package root directory:
+        <filename>tests/simptest/prjname</filename></para>
+
+        <para>Tests that the project name is set to the correct string.</para>
+
+        <para>Files:
+        <filename>projname-f-<replaceable>X</replaceable>.simptestcase</filename></para>
+
+        <para>Where <replaceable>X</replaceable> is one of</para>
+
+        <variablelist>
+          <varlistentry>
+            <term>abs</term>
+
+            <listitem>
+              <para>Tests -a.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>last</term>
+
+            <listitem>
+              <para>Test -l.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>source</term>
+
+            <listitem>
+              <para>Tests -s.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>prefix</term>
+
+            <listitem>
+              <para>Tests -u.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+
+      <section>
+        <title>Checking of the source</title>
+
+        <para>The type of the source must agree with the project type. If it
+        is a file or a directory it must also exist.</para>
+
+        <para>copyback should quit with an errorcode if any of the
+        requirements are not met.</para>
+
+        <para>Files:
+        <filename>source-<replaceable>projtype</replaceable>-ok.simptestcase</filename>,
+        <filename>source-<replaceable>projtype</replaceable>-error-X.simptestcase</filename>.</para>
+
+        <para>Where projtype is one of <literal>file</literal>,
+        <literal>dir</literal>, <literal>program</literal>.</para>
+
+        <section>
+          <title>When <replaceable>projtype</replaceable> is
+          <literal>file</literal></title>
+
+          <variablelist>
+            <varlistentry>
+              <term>ok</term>
+
+              <listitem>
+                <para>No error. copyback should exit successfully.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>error-no_file</term>
+
+              <listitem>
+                <para>Error: there exists no file or directory with the given
+                name.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>error-dir</term>
+
+              <listitem>
+                <para>Error: the source is a directory.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+
+        <section>
+          <title>When <replaceable>projtype</replaceable> is
+          <literal>dir</literal></title>
+
+          <variablelist>
+            <varlistentry>
+              <term>ok</term>
+
+              <listitem>
+                <para>No error. copyback should exit successfully.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>error-no_dir</term>
+
+              <listitem>
+                <para>Error: there exists no file or directory with the given
+                name.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>error-file</term>
+
+              <listitem>
+                <para>Error: the source is a file (not a directory).</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+
+        <section>
+          <title>When <replaceable>projtype</replaceable> is
+          <literal>program</literal></title>
+
+          <variablelist>
+            <varlistentry>
+              <term>ok</term>
+
+              <listitem>
+                <para>Success. The source is correctly not treated as a file
+                so that, for example, no checking for existance, is
+                done.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+      </section>
+
+      <section>
+        <title>Generating a new backup name</title>
+
+        <para>Root directory: <filename>gen-backup-name</filename></para>
+
+        <para>Tests.</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>getting the last bacup for a given datetime,</para>
+          </listitem>
+
+          <listitem>
+            <para>generating a unique target name and creating a lock file,
+            for a given datetime</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>Getting the most recent updatable backup for a project</title>
+
+        <para>Tests the function
+        <function>getMostRecentUpdatableBackup</function>. Tests that
+        non-updatable backups are skipped and that
+        <function>getMostRecentUpdatableBackup</function> really gets the most
+        recent backup.</para>
+
+        <para>Root directory:
+        <filename>tests/copyback/most-recent-updatable-backup</filename></para>
+      </section>
+
+      <section>
+        <title>Switches passed to syncdir for exclusion of files</title>
+
+        <para>Tests that the correct switches are passed to
+        <command>syncdir</command>.</para>
+
+        <para>Files:
+        syncdir/<filename>exclargs-<replaceable>X</replaceable>.simptestcase</filename>.</para>
+
+        <para>Where X is one of ...</para>
+
+        <variablelist>
+          <varlistentry>
+            <term>dir-1</term>
+
+            <listitem>
+              <para>The source is a directory that DOES NOT contain a
+              <filename>.copyback-exclude</filename> file.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>dir-2</term>
+
+            <listitem>
+              <para>The source is a directory that DOES contain a
+              <filename>.copyback-exclude</filename> file.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+
+      <section>
+        <title>Creating a new backup</title>
+
+        <para>Tests creating a new backup.</para>
+
+        <para>Root directory:
+        <filename>tests/copyback/create-new-backup</filename></para>
+
+        <para>The backup root directory is set by a direct path (--rd). The
+        project name is absolute (-a) ans is set to
+        "<literal>a_name</literal>".</para>
+
+        <para><command>copyback</command> is run in plain mode - not test
+        mode.</para>
+
+        <para>The checking of the result checks that</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>a backup file/directory is created</para>
+          </listitem>
+
+          <listitem>
+            <para>the file/directory contents are correct (gzipped, tared, not
+            gzipped, ...)</para>
+          </listitem>
+
+          <listitem>
+            <para>the filename of the backup printed to stdout matches the
+            name of the created file</para>
+          </listitem>
+
+          <listitem>
+            <para>the date+time in the filename of the backup is
+            correct.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>Updating an existing backup</title>
+
+        <section>
+          <title>Adding files to a directory project</title>
+
+          <para>Files: <filename>tests/update/add</filename>.</para>
+
+          <para>Adding files to a directory project.</para>
+
+          <para>The backup root directory is set by a direct path (--rd). The
+          project name is absolute (-a) ans is set to
+          "<literal>a_name</literal>".</para>
+
+          <para><command>copyback</command> is run in "plain mode" - not test
+          mode.</para>
+        </section>
+
+        <section>
+          <title>Synchronizing a directory project</title>
+
+          <para>Files: <filename>tests/update/synchronize</filename>.</para>
+
+          <para>Files:
+          <filename>add-dir-<replaceable>X</replaceable>.simptestcase</filename></para>
+
+          <para>Where <replaceable>X</replaceable> is one of</para>
+
+          <variablelist>
+            <varlistentry>
+              <term>existing</term>
+
+              <listitem>
+                <para>Add to an existing backup.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>non_existing</term>
+
+              <listitem>
+                <para>Add to a non existing backup - create a new.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </section>
+      </section>
+
+      <section>
+        <title>Locking of backups</title>
+
+        <para>Root directory:
+        <filename>tests/copyback/locking</filename></para>
+
+        <para>Tests creating and removing lock-files (-L, --lock and
+        --unlock).</para>
+
+        <para>Tests of locking updated backups is done in the tests of
+        updating existing backups.</para>
+      </section>
+
+      <section>
+        <title>Cleaning a project</title>
+
+        <para></para>
+      </section>
+    </section>
+  </chapter>
+</book>

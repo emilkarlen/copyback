@@ -1,0 +1,19 @@
+# Tests that the project name is set correctly.
+# Tests an "absolute" name and a default project name head.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:prj-name/whole/default/suffix
+home:..
+
+env.set:HOME:${SIMPTEST_HOME}
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root=. --file -h --debug -- -c print-prjname ${SIMPTEST_HOME}/data/prjname-test-file
+
+# "Standard" general checks.
+check.exitcode:0
+check.stderr.empty
+
+check.stdout.file.eq:output/suffix-home.txt

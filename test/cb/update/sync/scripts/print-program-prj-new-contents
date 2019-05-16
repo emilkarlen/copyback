@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# print-program-prj-new-contents - Program used as the "source program" for a
+# Simpback program project.
+
+# This program just outputs prints the file data/program/final.txt.
+# The contents of the synchronized backup should be compared with that file.
+
+readonly fileToOutputRelHome=data/program/final.txt
+
+readonly dirHome=$(dirname ${0})/..
+
+readonly fileToOutput="${dirHome}/${fileToOutputRelHome}"
+
+cat "${fileToOutput}"

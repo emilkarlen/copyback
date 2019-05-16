@@ -1,0 +1,26 @@
+# Tests deriving missing options automatically.
+#
+# Derive the operation, the source type and the naming scheme.
+#
+# Uses m4.
+#
+
+m4_include(common.m4)
+
+application:copyback/cleaning
+name:autoderive-options/backup-dir-root
+home:..
+
+setup.run.cmdline:mkdir BAK-ROOT
+setup.run.cmdline:mkdir SOURCES
+setup.run.cmdline:mkdir SOURCES/DIR
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root BAK-ROOT --debug -- -c print-derived-options SOURCES/DIR
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+# "Standard" "general" checks.
+check.exitcode:0
+check.stderr.empty
+
+check.stdout.file.eq/replaced:output/backup-dir-absolute.txt

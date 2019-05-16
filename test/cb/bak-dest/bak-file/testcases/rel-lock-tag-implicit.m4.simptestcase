@@ -1,0 +1,22 @@
+# Test deriving the Backup destination "prj-file".
+#
+# The command 'lock' is run (but stopped after deriving our info).
+# The selection is 'tag'.
+# The project directory is given implicitly.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:bak-dest/bak-file/rel-lock-tag-implicit
+home:..
+
+setup.run.cmdline:mkdir bak-root
+setup.run.cmdline:cp -rdp ${SIMPTEST_HOME}/data/a_name bak-root
+setup.run.cmdline:touch a_name
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --debug --root bak-root --pnh --basename -- -c dest-deriv-prj-file -- lock --tag _a_tag_ a_name
+
+check.exitcode:0
+
+check.stdout.file.eq:output/tag.txt

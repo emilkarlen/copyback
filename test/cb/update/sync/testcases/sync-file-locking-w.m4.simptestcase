@@ -1,0 +1,21 @@
+# Tests updating a locked backup.
+#
+# The backup cannot be updated because no --force is used.
+#
+
+m4_include(common.m4)
+
+application:copyback-update
+name:sync-file-locking-w
+home:..
+
+setup.install:data/file/exist-locked-w/file.txt
+
+# Code from m4 file: Set environment variables used later.
+M4_CheckNewBackupName_env_set
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --print-filename --file --update --last --basename ${SIMPTEST_HOME}/data/file/final/file.txt
+
+check.exitcode:M4_EXIT_ERROR
+
+check.stdout.empty

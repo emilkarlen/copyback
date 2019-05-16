@@ -1,0 +1,15 @@
+# Tests setting the project root directory from environment variables and
+# command line options.
+# 
+# Fails because no argument is given - there should be one.
+#
+
+m4_include(common.m4)
+
+application:copyback
+name:backup-destination/env-and-cla/prj-dir/file/usage-arg-fail
+home:..
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --file -b --root . --project-name-head --debug -- -c test-dest-deriv env-and-cla/prj-dir/file
+
+check.exitcode:M4_EXIT_USAGE

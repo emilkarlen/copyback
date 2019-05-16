@@ -1,0 +1,38 @@
+# Tests creating a new backup. The project is a file project that should
+# be gzipped.
+#
+# Checks that
+#   * a gziped file is created,
+#   * the file created is identical to the source file,
+#   * the backup has got the right name.
+#
+# Uses m4.
+#
+
+m4_include(common.m4) # m4
+
+application:copyback
+name:create-new-backup/file
+home:..
+
+M4_CheckNewBackupName_env_set # m4
+
+test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --file -z -c a_name ${SIMPTEST_HOME}/data/file
+
+# Copy the file to file with constant (known) name, so that we can gunzip it
+# and check its contents later.
+check.prepare.run.cmdline:cp $(cat ${SIMPTEST_STDOUT}) THE-FILE.txt.gz
+check.prepare.run.cmdline:gunzip THE-FILE.txt.gz
+
+check.prepare.replace-SIMPTEST-envvars/stdout
+
+check.exitcode:0
+
+# Check that exactly one file is created.
+check.run.cmdline:test $(ls a_name | wc -l) == '1'
+
+# Check that the file created is identical to the source file.
+check.compare.eq:data/file:THE-FILE.txt
+
+# Check that the backup name is correct (as described in the Test Plan).
+M4_CheckNewBackupName_check(`-r __SIMPTEST_TESTROOT__/a_name -E gz')  # m4
