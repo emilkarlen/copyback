@@ -12,6 +12,3 @@ EXTRA_DIST = tests reconf.sh
 
 uninstall-hook:
 	rm -rf $(pkgdatadir)
-
-maintainer-clean:
-	make -C help maintainer-clean

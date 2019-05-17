@@ -12,9 +12,6 @@ XSL_DB2MAN=http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.x
 copyback.1: copyback.refentry.docbook.xml
 	xsltproc $(XSL_DB2MAN) $<
 
-maintainer-clean:
-	rm -f $(MAINTAINER_TARGETS)
-
 copyback-UsersGuide-en.html: copyback-UsersGuide-en.docbook.xml
 	xsltproc --output copyback-UsersGuide-en.html customization-html.xsl copyback-UsersGuide-en.docbook.xml
 
