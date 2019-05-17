@@ -4,7 +4,7 @@
 
 doc_DATA = COPYING
 
-SUBDIRS = src bin test/common/scripts doc
+SUBDIRS = src bin test/common/scripts help
 
 TESTS=bin/run_tests
 
@@ -14,4 +14,4 @@ uninstall-hook:
 	rm -rf $(pkgdatadir)
 
 maintainer-clean:
-	make -C doc maintainer-clean
+	make -C help maintainer-clean

@@ -8,7 +8,6 @@ CBD=$(dirname $0)
 
 cd $CBD
 
-make distclean
 rm -f test-suite.log
 find . -name Makefile.in -delete
 rm -rf autom4te.cache
@@ -17,5 +16,5 @@ rm -rf auxiliary
 rm -f aclocal.m4
 rm -f configure
 
-find doc -name '*.html' -delete
-rm -f doc/copyback.1
+find help -name '*.html' -delete
+rm -f help/copyback.1
