@@ -1,6 +1,14 @@
 /aclocal.m4
 /autom4te.cache
 /auxiliary
+
+
+/Makefile
+Makefile.in
+
 /configure
 
-Makefile.in
+/config.log
+/config.status
+
+/test-suite.log
