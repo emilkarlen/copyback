@@ -1,4 +1,7 @@
-.PHONY: check 
+.PHONY: check data
 
-check:
+check: data
 	simptest testcases
+
+data:
+	make -C data

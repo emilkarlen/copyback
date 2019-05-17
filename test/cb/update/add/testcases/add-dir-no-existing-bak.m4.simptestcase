@@ -13,9 +13,6 @@ home:..
 
 setup.install:data/orig-no-existing-bak/a_name
 
-# Code from m4 file: Set environment variables used later.
-M4_CheckNewBackupName_env_set
-
 test.run.cmdline/prepend-home:M4_SRC_BIN/copyback --root . --project-name-head --print-filename --last --directory --update --no-delete --constant a_name ${SIMPTEST_HOME}/data/to-add
 
 check.exitcode:M4_EXIT_ERROR
