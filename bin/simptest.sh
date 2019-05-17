@@ -3,7 +3,7 @@
 # utility functionality.
 
 ###############################################################################
-# Copyright (C) 2007  Emil Karlén (email: emilkarlen@aim.com)
+# Copyright (C) 2007,2019  Emil Karlen (email: emil.karlen@fripost.org)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

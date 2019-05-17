@@ -68,7 +68,7 @@
                 xreflabel="backup - Creating or updating a backup">
       <title><literal>backup</literal> - Creating or updating a backup</title>
 
-      <para>Creates a new backup or updates an exising one.</para>
+      <para>Creates a new backup or updates an existing one.</para>
 
       <refsection>
         <title>Synopsis of <literal>backup</literal></title>
@@ -230,7 +230,7 @@
     <refsection id="cmd.list">
       <title>list - Listing existing backups of a project</title>
 
-      <para>List the exsisting backups for a project in creation time
+      <para>List the existing backups for a project in creation time
       order.</para>
 
       <refsection>
@@ -296,7 +296,7 @@
       <title>lock - Locking existing backups</title>
 
       <para>Locks backups so that later <command>copyback</command>
-      invokations <emphasis>can not</emphasis> update them (unless
+      invocations <emphasis>can not</emphasis> update them (unless
       <option>--force</option> is used).</para>
 
       <refsection>
@@ -360,7 +360,7 @@
       <refsection>
         <title>Description of <literal>lock</literal></title>
 
-        <para>Locking backups prevents later invokations of
+        <para>Locking backups prevents later invocations of
         <command>copyback</command> to update them (unless forced to, using
         <option>--force</option>).</para>
 
@@ -421,11 +421,11 @@
       <title>unlock - Unlocking existing backups</title>
 
       <para>Unlocks locked backups so that later <command>copyback</command>
-      invokations <emphasis>can</emphasis> update them.</para>
+      invocations <emphasis>can</emphasis> update them.</para>
 
       <para>The <literal>unlock</literal> command is the reverse of to the
       <literal>lock</literal> command. It is used in the same way, so see
-      "<xref linkend="cmd.lock" />" for details.</para>
+      "<xref linkend="cmd.lock"/>" for details.</para>
     </refsection>
   </refsection>
 
@@ -463,7 +463,7 @@
             path.</para>
 
             <para>If <option>--rc</option> is not given, one of the predefined
-            subpaths <literal>/home</literal>, <literal>/other</literal> or
+            sub paths <literal>/home</literal>, <literal>/other</literal> or
             <literal>/pgm-output</literal> is appended to this path to form
             the "backup root directory". <literal>/home</literal> is appended
             if the project is a file or directory and the project name prefix
@@ -489,8 +489,8 @@
             <para>Sets the "global backup root directory" to the specified
             path.</para>
 
-            <para>If <option>--rc</option> is not given, the predefined
-            subpaths /users/<replaceable>username</replaceable> is appended to
+            <para>If <option>--rc</option> is not given, the predefined sub
+            paths /users/<replaceable>username</replaceable> is appended to
             <replaceable>path</replaceable> to form the "user backup root
             directory". To this "user backup root directory", the same paths
             are appended as if it was set using --ru.</para>
@@ -508,8 +508,8 @@
           <term>--rc <replaceable>sub-path</replaceable></term>
 
           <listitem>
-            <para>Customizes the subpath that is added to either the global
-            backup root or user backup root. Replaces the predefined subpaths
+            <para>Customizes the sub path that is added to either the global
+            backup root or user backup root. Replaces the predefined sub paths
             that are otherwise appended to these.</para>
 
             <para>When used together with <option>--ru</option> or the
@@ -580,7 +580,7 @@
 
             <para>Locked backups can be forced to be updated using
             <option>-f</option>. Then, if a locked backup is updated, the
-            resulting backup will also be locked (regardless of wether
+            resulting backup will also be locked (regardless of whether
             <option>-L</option> is used or not).</para>
           </listitem>
         </varlistentry>
@@ -620,14 +620,14 @@
           XXX</term>
 
           <listitem>
-            <para>Syncronize the latest existing, not locked, backup with the
+            <para>Synchronize the latest existing, not locked, backup with the
             current contents of the project, or create a new backup if there
             is no existing one. The name of the backup is set to the current
             date, time and number.</para>
 
             <para>Locked backups can be forced to be updated using
             <option>-f</option>. Then, if a locked backup is updated, the
-            resulting backup will also be locked (regardless of wether
+            resulting backup will also be locked (regardless of whether
             <option>-L</option> is used or not).</para>
           </listitem>
         </varlistentry>
@@ -655,7 +655,7 @@ av PAT_NON_UPDATABLEe. Då kommer de att ignonreras i steget G1!-->
           <term><option>--lock</option> | <option>-L</option></term>
 
           <listitem>
-            <para>Lock the backup so that later invokations of
+            <para>Lock the backup so that later invocations of
             <command>copyback</command> will not update it. (Updating only
             happens when By "update", we mean adding (-A) or synchronizing
             (-S). If copyback is told to do an update, it will update latest
@@ -715,8 +715,8 @@ av PAT_NON_UPDATABLEe. Då kommer de att ignonreras i steget G1!-->
 
           <listitem>
             <para>An constant name (used just as it is, not derived from any
-            other information). name can't begin with a "/" or use the
-            relative path components "." or "..".</para>
+            other information). <replaceable>NAME</replaceable> can't begin
+            with a "/" or use the relative path components "." or "..".</para>
           </listitem>
         </varlistentry>
 
@@ -729,7 +729,7 @@ av PAT_NON_UPDATABLEe. Då kommer de att ignonreras i steget G1!-->
             this prefix removed. <replaceable>PREFIX-PATH</replaceable> must
             really be a prefix of the absolute source file name.
             <replaceable>PREFIX-PATH</replaceable> must also be an existing
-            directory. and it is the absolute path of
+            directory. And it is the absolute path of
             <replaceable>PREFIX-PATH</replaceable> that is used.</para>
 
             <para>(The "real" path for a file means the path reported by the C
@@ -791,7 +791,7 @@ av PAT_NON_UPDATABLEe. Då kommer de att ignonreras i steget G1!-->
   <refsection>
     <title>COPYRIGHT</title>
 
-    <para>Copyright © 2007 Emil Karlén.</para>
+    <para>Copyright © 2007, 2019 Emil Karlén.</para>
 
     <para>This is free software. You may redistribute copies of it under the
     terms of the GNU General Public License &lt;<ulink
