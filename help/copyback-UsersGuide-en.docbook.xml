@@ -663,7 +663,7 @@ Makefile  README  report.tex</computeroutput></screen>
       <para>We don't want these in our backups. We exclude them using the
       option <option>--exclude</option> (or <option>-e</option>):</para>
 
-      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> backup <option>--exclude</option>=calc <option>--exclude</option>=*.o .
+      <screen><prompt>~/programs/Calculator$</prompt> <command>copyback</command> backup <option>--exclude</option>=calc <option>--exclude</option>='*.o' .
 <computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1210</computeroutput>
 
 <prompt>~/programs/Calculator$</prompt> <command>ls</command> ~/my-backups/home/programs/Calculator/copyback-20070205-1210
@@ -674,7 +674,7 @@ report.tex</computeroutput></screen>
 
       <para><code><option>--exclude</option>=calc</code> causes the file
       `<filename arch="">calc</filename>' to be excluded.
-      <code><option>--exclude</option>=calc</code> causes all files ending
+      <code><option>--exclude</option>='*.o'</code> causes all files ending
       with `<literal>.o</literal>' to be excluded.</para>
 
       <para>Since it is so common to exclude selected files
@@ -734,19 +734,19 @@ examples - backup is the default command sot it need not be given-->
 
       <para>Now we can create backups like this:</para>
 
-      <screen><prompt>~$</prompt> <command>cbc</command> b
+      <screen><prompt>$</prompt> <command>cbc</command> b
 <computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1500.tar.gz</computeroutput></screen>
 
       <para>Or even like this (because <literal>backup</literal> is the
       default command):</para>
 
-      <screen><prompt>~$</prompt> <command>cbc</command>
+      <screen><prompt>$</prompt> <command>cbc</command>
 <computeroutput>~/my-backups/home/programs/Calculator/copyback-20070205-1500.tar.gz</computeroutput></screen>
 
       <para>List the existing backups like this (using the sort alias
       '<literal>l</literal>' for <literal>list</literal>):</para>
 
-      <screen><prompt>~$</prompt> <command>cbc</command> l
+      <screen><prompt>$</prompt> <command>cbc</command> l
 <computeroutput>copyback-20070205-1135
 copyback-20070205-1500.tar.gz</computeroutput></screen>
 
@@ -756,18 +756,18 @@ copyback-20070205-1500.tar.gz</computeroutput></screen>
       role="copyback">-l</option> for <option
       role="copyback">--last</option>):</para>
 
-      <screen><prompt>~$</prompt> <command>cbc</command> -ul
+      <screen><prompt>$</prompt> <command>cbc</command> -ul
 <computeroutput>copyback: Updating backup: copyback-20070205-1500.tar.gz
 ~/my-backups/home/programs/Calculator/copyback-20070205-1505.tar.gz</computeroutput></screen>
 
       <para>Lock all backups <option role="copyback">--all</option>, and list
       them:</para>
 
-      <screen><prompt>~$</prompt> <command>cbc</command> lock --all
+      <screen><prompt>$</prompt> <command>cbc</command> lock --all
 <computeroutput>copyback-20070205-1135
 copyback-20070205-1505.tar.gz</computeroutput><prompt>
 
-~$ </prompt><command>cbc</command> l
+$ </prompt><command>cbc</command> l
 <computeroutput>copyback-20070205-1135*
 copyback-20070205-1505.tar.gz*
 </computeroutput></screen>
@@ -777,14 +777,14 @@ copyback-20070205-1505.tar.gz*
       locked. But adding the option <option>--force</option> (or the short
       alias <option>-f</option>) will do:</para>
 
-      <screen><prompt>~$ </prompt><command>cbc</command> clean
+      <screen><prompt>$ </prompt><command>cbc</command> clean
 <computeroutput>copyback: Skipping locked backup: copyback-20070205-1135</computeroutput><prompt>
 
-~$ </prompt><command>cbc</command> l
+$ </prompt><command>cbc</command> l
 <computeroutput>copyback-20070205-1135*
 copyback-20070205-1505.tar.gz*
 </computeroutput><prompt>
-~$ </prompt><command>cbc</command> clean --force
+$ </prompt><command>cbc</command> clean --force
 <computeroutput>copyback-20070205-1135</computeroutput></screen>
     </section>
 
